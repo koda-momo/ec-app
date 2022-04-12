@@ -1,5 +1,5 @@
 # ec-app
-【React, Redux, Firebase】Redux練習用ECサイト(八百屋のサイト)
+【React, Redux, Firebase】Redux練習用ECサイト
 Redux練習用に作成したECサイトです。<a href="https://www.youtube.com/user/1492tiger">こちら</a>を参考にして作成
 
 ## ■使用技術
