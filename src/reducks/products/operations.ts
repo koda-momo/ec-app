@@ -9,6 +9,7 @@ const productsRef = collection(db, "products");
  * 商品を新規登録.
  */
 export const saveProduct = (
+  images: Array<{ id: string; path: string }>,
   name: string,
   description: string,
   category: string,
@@ -23,8 +24,10 @@ export const saveProduct = (
     const ref = doc(productsRef);
     const id = ref.id;
 
+    //登録するデータ
     const data = {
       id: id,
+      images: images,
       name: name,
       desctiption: description,
       category: category,
@@ -35,6 +38,9 @@ export const saveProduct = (
       update: timestamp,
     };
 
+    console.dir("登録データ:" + JSON.stringify(data));
+
+    //FirebaseのDBにデータを追加(setメソッド使用)
     return setDoc(doc(productsRef, id), data).then(() => {
       dispatch(push("/"));
     });
