@@ -1,7 +1,9 @@
 import { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
+import { PrimaryButton } from "../components/uikit/PrimaryButton";
 import { SelectBox } from "../components/uikit/SelectBox";
 import { TextInput } from "../components/uikit/TextInput";
+import { saveProduct } from "../reducks/products/operations";
 
 export const ProductEdit = () => {
   const dispatch = useDispatch();
@@ -12,26 +14,25 @@ export const ProductEdit = () => {
   const [description, setDescription] = useState("");
   //カテゴリ
   const [category, setCategory] = useState("");
-  //野菜か果物か
-  const [kind, setKind] = useState("");
+  //分野
+  const [field, setField] = useState("");
   //価格
   const [price, setPrice] = useState("");
 
   //カテゴリ一覧
   const [categories] = useState([
-    { id: "carrot", name: "にんじん" },
-    { id: "daikon", name: "大根" },
-    { id: "poteto", name: "ジャガイモ" },
-    { id: "onion", name: "玉ねぎ" },
-    { id: "strawberry", name: "イチゴ" },
-    { id: "banana", name: "バナナ" },
-    { id: "apple", name: "りんご" },
+    { id: "react", name: "React" },
+    { id: "next", name: "Next.js" },
+    { id: "vue", name: "Vue.js" },
+    { id: "design", name: "デザイン" },
+    { id: "php", name: "PHP" },
   ]);
 
-  //野菜か果物か
-  const [kinds] = useState([
-    { id: "vegetable", name: "野菜" },
-    { id: "fruit", name: "果物" },
+  //分野
+  const [fields] = useState([
+    { id: "client", name: "フロント" },
+    { id: "other", name: "その他" },
+    { id: "server", name: "サーバ" },
   ]);
 
   /**
@@ -90,10 +91,10 @@ export const ProductEdit = () => {
           />
           <SelectBox
             required={true}
-            value={kind}
+            value={field}
             label="種類"
-            select={setKind}
-            options={kinds}
+            select={setField}
+            options={fields}
           />
           <TextInput
             fullWidth={true}
@@ -105,6 +106,15 @@ export const ProductEdit = () => {
             type="number"
             onChange={inputPrice}
           />
+          <div className="module-spacer--medium" />
+          <div className="center">
+            <PrimaryButton
+              label="商品情報を保存"
+              onClick={() =>
+                dispatch(saveProduct(name, description, category, field, price))
+              }
+            />
+          </div>
         </div>
       </section>
     </>

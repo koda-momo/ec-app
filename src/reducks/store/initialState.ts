@@ -10,6 +10,9 @@ const initialState = {
     //ログインしているユーザ名
     userName: "",
   },
+  products: {
+    list: [],
+  },
 };
 
 export default initialState;
