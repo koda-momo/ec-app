@@ -1,9 +1,12 @@
-import { useCallback, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ImageArea } from "../components/products/ImageArea";
+import { SetPublicationArea } from "../components/products/SetPublicationArea";
 import { PrimaryButton } from "../components/uikit/PrimaryButton";
 import { SelectBox } from "../components/uikit/SelectBox";
 import { TextInput } from "../components/uikit/TextInput";
+import { db } from "../firebase";
 import { saveProduct } from "../reducks/products/operations";
 
 export const ProductEdit = () => {
@@ -21,6 +24,17 @@ export const ProductEdit = () => {
   const [field, setField] = useState("");
   //価格
   const [price, setPrice] = useState("");
+  //発行日と数量
+  const [publications, setPublications] = useState<
+    Array<{ publication: string; quantity: number }>
+  >([]);
+  //商品id
+  const [id, setId] = useState("");
+  //登録日
+  const [create, setCreate] = useState<{
+    seconds: number;
+    nanoseconds: number;
+  }>({ seconds: 0, nanoseconds: 0 });
 
   //カテゴリ一覧
   const [categories] = useState([
@@ -58,6 +72,29 @@ export const ProductEdit = () => {
   const inputPrice = useCallback((e) => {
     setPrice(e.target.value);
   }, []);
+
+  /**
+   * URLからIDを取得してIDを基に製品情報の取得(編集モードの初期値).
+   */
+  useEffect(() => {
+    //URLの/product/editの後ろからIDを取得
+    setId(window.location.pathname.split("/product/edit")[1]);
+    //DBから製品情報取得(db,"DB名",取得したい製品のID)
+    id !== "" &&
+      getDoc(doc(db, "products", id)).then((snapShot) => {
+        const data = snapShot.data();
+        if (data) {
+          setImages(data.images);
+          setName(data.name);
+          setDescription(data.description);
+          setCategory(data.category);
+          setField(data.field);
+          setPrice(data.price);
+          setPublications(data.publications);
+          setCreate(data.created_at);
+        }
+      });
+  }, [id]);
 
   return (
     <>
@@ -109,15 +146,30 @@ export const ProductEdit = () => {
             type="number"
             onChange={inputPrice}
           />
-          <div className="module-spacer--medium" />
+          <div className="module-spacer--small" />
+          <SetPublicationArea
+            publications={publications}
+            setPublications={setPublications}
+          />
+          <div className="module-spacer--small" />
           <div className="center">
             <PrimaryButton
               label="商品情報を保存"
-              onClick={() =>
+              onClick={() => {
                 dispatch(
-                  saveProduct(images, name, description, category, field, price)
-                )
-              }
+                  saveProduct(
+                    id,
+                    images,
+                    name,
+                    description,
+                    category,
+                    field,
+                    price,
+                    publications,
+                    create
+                  )
+                );
+              }}
             />
           </div>
         </div>

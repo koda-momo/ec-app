@@ -13,6 +13,10 @@ const initialState = {
   products: {
     list: [],
   },
+  items: {
+    itemName: "",
+    itemImage: "",
+  },
 };
 
 export default initialState;
