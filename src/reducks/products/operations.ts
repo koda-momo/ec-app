@@ -1,7 +1,17 @@
 import { push } from "connected-react-router";
-import { collection, doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  setDoc,
+} from "firebase/firestore";
 import { Dispatch } from "react";
 import { db, FirebaseTimestamp } from "../../firebase";
+import { fetchProductsAction } from "./actions";
+import { productsType } from "./types";
 
 const productsRef = collection(db, "products");
 
@@ -49,5 +59,26 @@ export const saveProduct = (
     return setDoc(doc(productsRef, postId), data, { merge: true }).then(() => {
       dispatch(push("/"));
     });
+  };
+};
+
+/**
+ * 商品一覧の取得.
+ * @returns
+ */
+export const fetchProducts = () => {
+  return async (dispatch: Dispatch<unknown>) => {
+    //DBからデータの取得:並び替え(更新日順,降順)
+    let q = query(productsRef);
+    // let q = query(productsRef, orderBy("updated_at", "desc"));
+    const querySnapshot = await getDocs(q);
+
+    const productList = new Array<productsType>();
+
+    querySnapshot.forEach((item) => {
+      const product = item.data() as productsType;
+      productList.push(product);
+    });
+    dispatch(fetchProductsAction(productList));
   };
 };

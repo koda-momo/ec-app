@@ -1,9 +1,10 @@
 import { createSelector } from "reselect";
-import { productType } from "./types";
+import { productsType } from "./types";
 
-const userSelector = (state: { product: productType }) => state.product;
+const productsSelector = (state: { products: { list: [productsType] } }) =>
+  state;
 
 /**
- * 商品名取得.
+ * 全商品情報取得.
  */
-export const getUserId = createSelector([userSelector], (state) => state.name);
+export const getProducts = createSelector([productsSelector], (state) => state);

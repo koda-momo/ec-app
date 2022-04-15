@@ -4,27 +4,27 @@ import * as Actions from "./actions";
 import initialState from "../store/initialState";
 //型
 import { PayloadAction } from "@reduxjs/toolkit";
-import { userActionType } from "../users/type";
+import { productActionType } from "./types";
 
 /**
- *
+ * 商品情報Resucer
+ * @remarks stateの値書き換えない時はここを通さずoparationsのみでOK
  */
 export const ProductsReducer = (
   state = initialState.products,
-  action: PayloadAction<userActionType>
+  action: PayloadAction<productActionType>
 ) => {
   switch (action.type) {
     //Actionsで作成した指示のどれを使うか
     /**
-     * サインイン.
+     * 商品情報の保存.
      */
-    case Actions.SIGN_IN:
+    case Actions.FETCH_PRODUCTS:
       return {
         //state(初期値)とaction.payload(変更後の値)をマージする
         ...state,
-        ...action.payload,
+        list: [...action.payload],
       };
-
     /**
      * 当てはまらなければ.
      */

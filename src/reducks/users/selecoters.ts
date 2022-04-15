@@ -1,5 +1,5 @@
 import { createSelector } from "reselect";
-import { userType } from "./type";
+import { userType } from "./types";
 
 const userSelector = (state: { users: userType }) => state.users;
 
