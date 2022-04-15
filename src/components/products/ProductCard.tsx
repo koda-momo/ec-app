@@ -109,7 +109,7 @@ export const ProductCard: FC<Props> = memo(({ id, images, name, price }) => {
         <CardMedia
           className={classes.media}
           image={showImage}
-          onClick={() => dispatch(push(`/product/detail/${id}`))}
+          onClick={() => dispatch(push(`/product/${id}`))}
         />
         <CardContent className={classes.content}>
           <div>

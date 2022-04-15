@@ -167,30 +167,24 @@ export const SetPublicationArea: FC<Props> = memo(
               <TableBody>
                 {publications.length > 0 &&
                   publications.map((item, i) => (
-                    <>
-                      <TableRow key={item.publication}>
-                        <TableCell>{item.publication}</TableCell>
-                        <TableCell>{item.quantity}</TableCell>
-                        <TableCell>
-                          <IconButton
-                            onClick={() =>
-                              editPublication(
-                                i,
-                                item.publication,
-                                item.quantity
-                              )
-                            }
-                          >
-                            <EditIcon className={classes.iconCell} />
-                          </IconButton>
-                        </TableCell>
-                        <TableCell>
-                          <IconButton onClick={() => deletePublication(i)}>
-                            <DeleteIcon className={classes.iconCell} />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    </>
+                    <TableRow key={i}>
+                      <TableCell>{item.publication}</TableCell>
+                      <TableCell>{item.quantity}</TableCell>
+                      <TableCell>
+                        <IconButton
+                          onClick={() =>
+                            editPublication(i, item.publication, item.quantity)
+                          }
+                        >
+                          <EditIcon className={classes.iconCell} />
+                        </IconButton>
+                      </TableCell>
+                      <TableCell>
+                        <IconButton onClick={() => deletePublication(i)}>
+                          <DeleteIcon className={classes.iconCell} />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
                   ))}
               </TableBody>
             </Table>

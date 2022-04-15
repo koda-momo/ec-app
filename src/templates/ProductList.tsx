@@ -5,25 +5,8 @@ import { fetchProducts } from "../reducks/products/operations";
 import { getProducts } from "../reducks/products/selectors";
 import { productsType } from "../reducks/products/types";
 
-//CSS
-import { makeStyles } from "@material-ui/core/styles";
-
-const useStyles = makeStyles((theme) => ({
-  card: {
-    display: "flex",
-    //スマホサイズ(sm)以下の場合のCSS
-    [theme.breakpoints.down("sm")]: {
-      gap: 3,
-    },
-    //タブレットサイズ(md)以上の場合のCSS
-    [theme.breakpoints.up("md")]: {
-      gap: 5,
-    },
-  },
-}));
-
 /**
- * 製品一覧.
+ * 商品一覧.
  */
 export const ProductList = () => {
   //dispatchを使用
@@ -32,8 +15,6 @@ export const ProductList = () => {
   const selector = useSelector(
     (state: { products: { list: [productsType] } }) => state
   );
-  //CSS
-  const classes = useStyles();
 
   const [products, setProducts] = useState<Array<productsType>>([]);
 

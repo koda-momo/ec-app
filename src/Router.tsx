@@ -6,6 +6,7 @@ import Auth from "./Auth";
 import Reset from "./templates/Reset";
 import ProductEdit from "./templates/ProductEdit";
 import ProductList from "./templates/ProductList";
+import ProductDetail from "./templates/ProductDetail";
 
 //Switch+exactで「100%そのURLだった場合、遷移」という設定になる
 //(/)?で囲んだ文字列はあっても無くてもマッチ(ダイナミックルートと同じ感じ)
@@ -22,7 +23,8 @@ const Router = () => {
       <Auth>
         <Route exact path={"(/)?"} component={ProductList} />
         {/* <Route exact path={"/product/edit"} component={ProductEdit} /> */}
-        <Route path={"/product/edit/(:id)?"} component={ProductEdit} />
+        <Route exact path={"/product/edit/(:id)?"} component={ProductEdit} />
+        <Route path={"/product/(:id)?"} component={ProductDetail} />
       </Auth>
     </Switch>
   );

@@ -90,11 +90,12 @@ export const deleteProduct = (id: string) => {
   return async (dispatch: Dispatch<unknown>) => {
     //DBから削除
     await deleteDoc(doc(db, "products", id));
+
+    //stateも書き換え
     const selector = useSelector(
       (state: { products: { list: [productsType] } }) => state
     );
 
-    //stateも書き換え
     const prevProducts = getProducts(selector).products.list;
     const newPrevProducts = prevProducts.filter((item) => item.id !== id);
     dispatch(deleteProductAction(newPrevProducts));

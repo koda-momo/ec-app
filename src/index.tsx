@@ -11,6 +11,9 @@ import createStore from "./reducks/store/store";
 import * as History from "history";
 import { ConnectedRouter } from "connected-react-router";
 
+import { MuiThemeProvider } from "@material-ui/core";
+import { theme } from "../src/assets/theme";
+
 //history(遷移の履歴)の使用
 const history = History.createBrowserHistory();
 
@@ -26,7 +29,9 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <ConnectedRouter history={history}>
-        <App />
+        <MuiThemeProvider theme={theme}>
+          <App />
+        </MuiThemeProvider>
       </ConnectedRouter>
     </Provider>
   </React.StrictMode>,
