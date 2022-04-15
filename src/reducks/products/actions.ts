@@ -21,8 +21,22 @@ export const saveProductAction = (productState: {
   };
 };
 
+/**
+ * 商品情報を全件取得する.
+ */
 export const FETCH_PRODUCTS = "FETCH_PRODUCTS";
 export const fetchProductsAction = (products: Array<productsType>) => {
+  return {
+    type: "FETCH_PRODUCTS", //依頼名
+    payload: products,
+  };
+};
+
+/**
+ * 商品を削除する.
+ */
+export const DELETE_PRODUCT = "DELETE_PRODUCT";
+export const deleteProductAction = (products: Array<productsType>) => {
   return {
     type: "FETCH_PRODUCTS", //依頼名
     payload: products,

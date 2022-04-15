@@ -1,6 +1,7 @@
 import { push } from "connected-react-router";
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -9,8 +10,10 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { Dispatch } from "react";
+import { useSelector } from "react-redux";
 import { db, FirebaseTimestamp } from "../../firebase";
-import { fetchProductsAction } from "./actions";
+import { deleteProductAction, fetchProductsAction } from "./actions";
+import { getProducts } from "./selectors";
 import { productsType } from "./types";
 
 const productsRef = collection(db, "products");
@@ -80,5 +83,20 @@ export const fetchProducts = () => {
       productList.push(product);
     });
     dispatch(fetchProductsAction(productList));
+  };
+};
+
+export const deleteProduct = (id: string) => {
+  return async (dispatch: Dispatch<unknown>) => {
+    //DBから削除
+    await deleteDoc(doc(db, "products", id));
+    const selector = useSelector(
+      (state: { products: { list: [productsType] } }) => state
+    );
+
+    //stateも書き換え
+    const prevProducts = getProducts(selector).products.list;
+    const newPrevProducts = prevProducts.filter((item) => item.id !== id);
+    dispatch(deleteProductAction(newPrevProducts));
   };
 };

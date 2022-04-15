@@ -26,6 +26,15 @@ export const ProductsReducer = (
         list: [...action.payload],
       };
     /**
+     * 商品情報の削除.
+     */
+    case Actions.DELETE_PRODUCT:
+      return {
+        //state(初期値)とaction.payload(変更後の値)をマージする
+        ...state,
+        list: [...action.payload],
+      };
+    /**
      * 当てはまらなければ.
      */
     default:

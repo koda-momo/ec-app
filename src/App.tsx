@@ -5,9 +5,11 @@ import "./assets/style.css";
 
 const App = () => {
   return (
-    <main>
-      <Router />
-    </main>
+    <>
+      <main className="py-24 flex flex-1 min-w-screen">
+        <Router />
+      </main>
+    </>
   );
 };
 
