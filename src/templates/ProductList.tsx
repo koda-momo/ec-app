@@ -16,6 +16,7 @@ export const ProductList = () => {
     (state: { products: { list: [productsType] } }) => state
   );
 
+  //商品一覧
   const [products, setProducts] = useState<Array<productsType>>([]);
 
   /**

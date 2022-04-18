@@ -32,6 +32,9 @@ const useStyles = makeStyles({
   },
 });
 
+/**
+ * 出版日を表示するテーブル.
+ */
 export const PublicationTable: FC<Props> = memo(({ publications }) => {
   const classes = useStyles();
 

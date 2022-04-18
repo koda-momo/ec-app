@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 //CSS
 import { makeStyles } from "@material-ui/core/styles";
@@ -50,8 +50,6 @@ const useStyles = makeStyles((theme) => ({
  * 商品詳細.
  */
 export const ProductDetail = () => {
-  //dispatchを使用
-  const dispatch = useDispatch();
   //selectorを使用
   const selector = useSelector(
     (state: { router: { location: { pathname: string } } }) => state
@@ -67,7 +65,7 @@ export const ProductDetail = () => {
   const [product, setProduct] = useState<productsType>();
 
   /**
-   *
+   * 文章を改行して表示する.
    */
   const returnCodeToBr = (text: string) => {
     if (text === "") {

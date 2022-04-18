@@ -3,7 +3,6 @@ import { createStore as reduxCreateStore, combineReducers } from "redux";
 //reducersのインポート
 import { UserReducer } from "../users/reducers";
 import { ProductsReducer } from "../products/reducers";
-import { ItemReducer } from "../items/reducers";
 
 //reduxでルーティングの管理
 import { applyMiddleware } from "redux";
@@ -24,7 +23,6 @@ export default function createStore(history: History) {
       router: connectRouter(history),
       users: UserReducer,
       products: ProductsReducer,
-      items: ItemReducer,
     }),
     applyMiddleware(routerMiddleware(history), thunk)
   );

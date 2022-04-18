@@ -25,6 +25,8 @@ type Props = {
   name: string; //商品名
   price: number; //商品の価格
 };
+
+//CSS
 const useStyles = makeStyles((theme) => ({
   root: {
     [theme.breakpoints.down("sm")]: {
@@ -73,6 +75,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * 商品一覧の一商品だけ表示するカード.
+ */
 export const ProductCard: FC<Props> = memo(({ id, images, name, price }) => {
   //dispatchを使用
   const dispatch = useDispatch();
@@ -130,7 +135,7 @@ export const ProductCard: FC<Props> = memo(({ id, images, name, price }) => {
             open={Boolean(anchorEl)}
             onClose={handleClose}
           >
-            <MenuItem onClick={() => dispatch(push(`/product/edit/${id}`))}>
+            <MenuItem onClick={() => dispatch(push(`/edit/${id}`))}>
               編集する
             </MenuItem>
             <MenuItem

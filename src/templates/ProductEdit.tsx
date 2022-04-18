@@ -9,6 +9,9 @@ import { TextInput } from "../components/uikit/TextInput";
 import { db } from "../firebase";
 import { saveProduct } from "../reducks/products/operations";
 
+/**
+ * 商品編集.
+ */
 export const ProductEdit = () => {
   const dispatch = useDispatch();
 
@@ -77,8 +80,8 @@ export const ProductEdit = () => {
    * URLからIDを取得してIDを基に製品情報の取得(編集モードの初期値).
    */
   useEffect(() => {
-    //URLの/product/editの後ろからIDを取得
-    setId(window.location.pathname.split("/product/edit")[1]);
+    //URLの/edit/の後ろからIDを取得
+    setId(window.location.pathname.split("/edit/")[1]);
     //DBから製品情報取得(db,"DB名",取得したい製品のID)
     id !== "" &&
       getDoc(doc(db, "products", id)).then((snapShot) => {
