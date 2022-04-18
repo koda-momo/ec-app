@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 //CSS
-import { makeStyles } from "@material-ui/core/styles";
+import { createTheme, makeStyles } from "@material-ui/core/styles";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { productsType } from "../reducks/products/types";
