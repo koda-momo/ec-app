@@ -10,6 +10,13 @@ const initialState = {
     //ログインしているユーザ名
     userName: "",
   },
+  products: {
+    list: [],
+  },
+  items: {
+    itemName: "",
+    itemImage: "",
+  },
 };
 
 export default initialState;

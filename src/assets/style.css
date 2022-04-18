@@ -147,6 +147,7 @@
   display: none;
 }
 
+/* 画面サイズが576px以上になったら下記CSSに上書き */
 @media screen and (min-width: 576px) {
   /*********** Module Spacer ***********/
   .module-spacer--extra-extra-small {

@@ -7,7 +7,7 @@ type Props = {
   multiline: boolean;
   required: boolean;
   rows: number;
-  value: string;
+  value: string | number;
   type: string;
   onChange: ChangeEventHandler<HTMLInputElement>;
 };

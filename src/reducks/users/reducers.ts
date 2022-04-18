@@ -4,7 +4,7 @@ import * as Actions from "./actions";
 import initialState from "../store/initialState";
 //型
 import { PayloadAction } from "@reduxjs/toolkit";
-import { userActionType } from "./type";
+import { userActionType } from "./types";
 
 /**
  * ユーザ情報の変更.

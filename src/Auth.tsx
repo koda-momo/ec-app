@@ -2,7 +2,7 @@ import { FC, ReactNode, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { listenAuthState } from "./reducks/users/operations";
 import { getIsSignedIn } from "./reducks/users/selecoters";
-import { userType } from "./reducks/users/type";
+import { userType } from "./reducks/users/types";
 
 type Props = {
   children: ReactNode;
