@@ -79,8 +79,8 @@ export const signIn = (email: string, password: string) => {
     }
 
     //Firebaseのサインイン機能
-    signInWithEmailAndPassword(auth, email, password).then(
-      async (result: { user: any }) => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then(async (result: { user: any }) => {
         //サインインして返ってきたデータ
         const user = result.user;
 
@@ -104,8 +104,19 @@ export const signIn = (email: string, password: string) => {
           }
           dispatch(push("/"));
         }
-      }
-    );
+      })
+      //サインインエラー処理
+      .catch((error) => {
+        if (error.message === "Firebase: Error (auth/invalid-email).") {
+          alert("メールアドレスの登録がありません");
+          return false;
+        }
+        if (error.message === "Firebase: Error (auth/wrong-password).") {
+          alert("パスワードが間違えています");
+          return false;
+        }
+        alert("サインインに失敗しました");
+      });
   };
 };
 
