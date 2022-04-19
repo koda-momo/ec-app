@@ -1,4 +1,4 @@
-import { FC, memo, useState, useCallback, KeyboardEvent } from "react";
+import { FC, memo, useState, useCallback } from "react";
 import { makeStyles } from "@material-ui/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -65,15 +65,11 @@ export const Header: FC = memo(() => {
             width="128px"
             onClick={() => dispatch(push("/"))}
           />
-          {/* {isSignedIn && (
+          {isSignedIn && (
             <div className={classes.iconButtons}>
               <HeaderMenu handleDrawerToggle={handleDrawerToggle} />
             </div>
-          )} */}
-
-          <div className={classes.iconButtons}>
-            <HeaderMenu handleDrawerToggle={handleDrawerToggle} />
-          </div>
+          )}
         </Toolbar>
       </AppBar>
       <CloseableDrawer open={open} onClose={handleDrawerToggle} />

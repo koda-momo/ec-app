@@ -1,8 +1,14 @@
+import { PayloadAction } from "@reduxjs/toolkit";
+import { cartType } from "./types";
+
 //文字列を定数に入れてあげる(Reducerで使う際に依頼名を判断するため)
 export const SIGN_IN = "SIGN_IN";
 
 //isSignedInをtrueに、uidにはこれを入れる、userNameにはこれを入れるという指示
 //今回代入でuserState使うから引数で受け取っているけれど、必要なければ不要
+/**
+ * サインイン.
+ */
 export const signInAction = (userState: {
   id: string;
   role: string;
@@ -19,7 +25,9 @@ export const signInAction = (userState: {
   };
 };
 
-//文字列を定数に入れてあげる(Reducerで使う際に依頼名を判断するため)
+/**
+ * サインアウト.
+ */
 export const SIGN_OUT = "SIGN_OUT";
 
 export const signOutAction = () => {
@@ -30,6 +38,25 @@ export const signOutAction = () => {
       role: "",
       uid: "",
       userName: "",
+    },
+  };
+};
+
+/**
+ * カート情報の書き換え.
+ */
+export const FETCH_PRODUCTS_IN_CARTACTION = "FETCH_PRODUCTS_IN_CARTACTION";
+
+export const fetchProductsInCartAction = (
+  products: Array<cartType>
+): PayloadAction<
+  { products: Array<cartType> },
+  typeof FETCH_PRODUCTS_IN_CARTACTION
+> => {
+  return {
+    type: "FETCH_PRODUCTS_IN_CARTACTION",
+    payload: {
+      products,
     },
   };
 };

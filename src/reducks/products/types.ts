@@ -11,7 +11,7 @@ export type productsType = {
 };
 export type productActionType = [
   {
-    type: "";
+    type: string;
     payload: productsType;
   }
 ];

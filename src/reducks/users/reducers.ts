@@ -4,7 +4,7 @@ import * as Actions from "./actions";
 import initialState from "../store/initialState";
 //型
 import { PayloadAction } from "@reduxjs/toolkit";
-import { userActionType } from "./types";
+import { userType, cartType } from "./types";
 
 /**
  * ユーザ情報の変更.
@@ -15,7 +15,7 @@ import { userActionType } from "./types";
  */
 export const UserReducer = (
   state = initialState.users,
-  action: PayloadAction<userActionType>
+  action: PayloadAction<any>
 ) => {
   switch (action.type) {
     //Actionsで作成した指示のどれを使うか
@@ -35,6 +35,14 @@ export const UserReducer = (
       return {
         //完全に代入するのでマージでなくてOK
         ...action.payload,
+      };
+    /**
+     * カートに情報書き換え.
+     */
+    case Actions.FETCH_PRODUCTS_IN_CARTACTION:
+      return {
+        ...state,
+        cart: [...action.payload],
       };
     /**
      * 当てはまらなければ.
