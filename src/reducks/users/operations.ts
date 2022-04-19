@@ -1,15 +1,20 @@
 import { push } from "connected-react-router";
 import { Dispatch } from "react";
-import { signInAction, signOutAction } from "./actions";
+import {
+  fetchProductsInCartAction,
+  signInAction,
+  signOutAction,
+} from "./actions";
 
 //firebase
 import { auth, db, FirebaseTimestamp } from "../../firebase/index";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, setDoc } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { cartType, userType } from "./types";
 
 /**
  * signup.
@@ -115,6 +120,13 @@ export const signIn = (email: string, password: string) => {
           alert("パスワードが間違えています");
           return false;
         }
+        if (error.message === "Quota exceeded.") {
+          alert(
+            "FireBaseのアクセス上限に達してしまいました。日を改めて下さい。"
+          );
+          return false;
+        }
+
         alert("サインインに失敗しました");
       });
   };
@@ -122,6 +134,7 @@ export const signIn = (email: string, password: string) => {
 
 /**
  * 認証のメソッド.
+ * @remarks Firebaseの方でサインインしていればreduxの方もサインインにする
  */
 export const listenAuthState = () => {
   return async (dispatch: Dispatch<unknown>) => {
@@ -131,18 +144,21 @@ export const listenAuthState = () => {
         const uid = user.uid;
 
         //DBからID取得(db,"DB名",取得したいユーザのID)
-        const snapShot = await getDoc(doc(db, "users", uid));
-        const data = snapShot.data();
-
-        //Stateに代入
-        if (data) {
-          dispatch(
-            signInAction({
-              id: data.uid,
-              role: data.role,
-              userName: data.userName,
-            })
-          );
+        try {
+          const snapShot = await getDoc(doc(db, "users", uid));
+          const data = snapShot.data();
+          //Stateに代入
+          if (data) {
+            dispatch(
+              signInAction({
+                id: data.uid,
+                role: data.role,
+                userName: data.userName,
+              })
+            );
+          }
+        } catch (error) {
+          dispatch(push("/signin"));
         }
       } else {
         dispatch(push("/signin"));
@@ -186,5 +202,41 @@ export const resetPassword = (email: string) => {
       dispatch(signOutAction());
       dispatch(push("/signout"));
     });
+  };
+};
+
+/**
+ * カートに追加.
+ */
+export const addProductToCart = (cartData: cartType) => {
+  return async (
+    dispatch: Dispatch<unknown>,
+    getState: () => { users: userType }
+  ) => {
+    //ログインしているユーザのIDをReduxから取得
+    const uid = getState().users.uid;
+
+    //Firebaseからカート情報新規追加
+    const cartRef = doc(collection(db, "users", uid, "cart"));
+
+    //受け取ったカート情報にカートIDを追加する
+    const addedProduct = {
+      ...cartData,
+      cartId: cartRef.id,
+    };
+
+    //Firebaseにカート情報を追加
+    await setDoc(cartRef, addedProduct);
+    alert("商品をカートに追加しました");
+    dispatch(push("/"));
+  };
+};
+
+/**
+ * Reduxのカート情報を書き換え.
+ */
+export const fetchProductsInCart = (products: Array<cartType>) => {
+  return async (dispatch: Dispatch<unknown>) => {
+    dispatch(fetchProductsInCartAction(products));
   };
 };

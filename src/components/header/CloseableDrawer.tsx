@@ -85,7 +85,7 @@ export const CloseableDrawer: FC<Props> = memo(
         label: "商品登録",
         icon: <AddCircleIcon />,
         id: "register",
-        value: "/product/edit",
+        value: "/edit/",
       },
       {
         func: selectMenu,
@@ -117,7 +117,7 @@ export const CloseableDrawer: FC<Props> = memo(
               keepMounted: true,
             }}
           >
-            <div>
+            <div onKeyDown={(e) => onClose(e)}>
               <div className={classes.searchField}>
                 <TextInput
                   fullWidth={false}

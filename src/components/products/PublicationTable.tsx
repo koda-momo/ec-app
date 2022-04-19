@@ -5,7 +5,6 @@ import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import IconButton from "@material-ui/core/IconButton";
 
@@ -18,6 +17,7 @@ import { makeStyles } from "@material-ui/styles";
 
 type Props = {
   publications: Array<{ publication: string; quantity: number }>; //出版日
+  addProduct: (selectedPublication: string) => void;
 };
 
 //CSS
@@ -35,44 +35,48 @@ const useStyles = makeStyles({
 /**
  * 出版日を表示するテーブル.
  */
-export const PublicationTable: FC<Props> = memo(({ publications }) => {
-  const classes = useStyles();
+export const PublicationTable: FC<Props> = memo(
+  ({ publications, addProduct }) => {
+    const classes = useStyles();
 
-  return (
-    <>
-      <TableContainer>
-        <Table>
-          <TableBody>
-            {publications.length > 0 &&
-              publications.map((item, i) => (
-                <TableRow key={i}>
-                  <TableCell component="th" scope="row">
-                    <div className={classes.publication}>出版日:</div>
-                    <div className={classes.publication}>
-                      {item.publication}
-                    </div>
-                  </TableCell>
-                  <TableCell>残り:{item.quantity}点</TableCell>
-                  <TableCell className={classes.iconCell}>
-                    <IconButton>
+    return (
+      <>
+        <TableContainer>
+          <Table>
+            <TableBody>
+              {publications.length > 0 &&
+                publications.map((item, i) => (
+                  <TableRow key={i}>
+                    <TableCell component="th" scope="row">
+                      <div className={classes.publication}>出版日:</div>
+                      <div className={classes.publication}>
+                        {item.publication}
+                      </div>
+                    </TableCell>
+                    <TableCell>残り:{item.quantity}点</TableCell>
+                    <TableCell className={classes.iconCell}>
                       {item.quantity > 0 ? (
-                        <ShoppingCartIcon />
+                        <IconButton
+                          onClick={() => addProduct(item.publication)}
+                        >
+                          <ShoppingCartIcon />
+                        </IconButton>
                       ) : (
                         <div> 売切</div>
                       )}
-                    </IconButton>
-                  </TableCell>
-                  <TableCell>
-                    <IconButton>
-                      <FavoriteIcon />
-                    </IconButton>
-                  </TableCell>
-                  <TableCell></TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </>
-  );
-});
+                    </TableCell>
+                    <TableCell>
+                      <IconButton>
+                        <FavoriteIcon />
+                      </IconButton>
+                    </TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </>
+    );
+  }
+);

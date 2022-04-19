@@ -9,6 +9,8 @@ const initialState = {
     uid: "",
     //ログインしているユーザ名
     userName: "",
+    //カートリスト
+    cart: [],
   },
   products: {
     list: [],

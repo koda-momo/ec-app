@@ -23,3 +23,11 @@ export const getIsSignedIn = createSelector(
   [userSelector],
   (state) => state.isSignedIn
 );
+
+/**
+ * カート情報取得.
+ */
+export const getProductsInCart = createSelector(
+  [userSelector],
+  (state) => state.cart
+);
