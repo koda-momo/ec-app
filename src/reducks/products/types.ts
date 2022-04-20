@@ -1,3 +1,5 @@
+import { cartType } from "../users/types";
+
 export type productsType = {
   id: string; //商品ID
   images: Array<{ id: string; path: string }>; //商品画像情報
@@ -15,3 +17,12 @@ export type productActionType = [
     payload: productsType;
   }
 ];
+
+//注文
+export type orderProductsType = {
+  id: string;
+  images: Array<{ id: string; path: string }>;
+  name: string;
+  price: number;
+  publications: string;
+};

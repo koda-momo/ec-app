@@ -2,7 +2,7 @@ import { Timestamp } from "firebase/firestore";
 
 //カートタイプ
 export type cartType = {
-  cartId?: string;
+  cartId: string;
   added_at: Timestamp;
   description: string;
   field: string;

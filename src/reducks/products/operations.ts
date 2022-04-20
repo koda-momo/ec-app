@@ -8,13 +8,15 @@ import {
   orderBy,
   query,
   setDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { Dispatch } from "react";
 import { useSelector } from "react-redux";
 import { db, FirebaseTimestamp } from "../../firebase";
+import { cartType, userType } from "../users/types";
 import { deleteProductAction, fetchProductsAction } from "./actions";
 import { getProducts } from "./selectors";
-import { productsType } from "./types";
+import { productsType, orderProductsType } from "./types";
 
 const productsRef = collection(db, "products");
 
@@ -72,8 +74,7 @@ export const saveProduct = (
 export const fetchProducts = () => {
   return async (dispatch: Dispatch<unknown>) => {
     //DBからデータの取得:並び替え(更新日順,降順)
-    let q = query(productsRef);
-    // let q = query(productsRef, orderBy("updated_at", "desc"));
+    let q = query(productsRef, orderBy("updated_at", "desc"));
     const querySnapshot = await getDocs(q);
 
     const productList = new Array<productsType>();
@@ -99,5 +100,127 @@ export const deleteProduct = (id: string) => {
     const prevProducts = getProducts(selector).products.list;
     const newPrevProducts = prevProducts.filter((item) => item.id !== id);
     dispatch(deleteProductAction(newPrevProducts));
+  };
+};
+
+/**
+ * 商品の注文.
+ */
+export const orderProduct = (
+  productInCart: Array<cartType>, //注文商品
+  amount: number //合計金額
+) => {
+  return async (
+    dispatch: Dispatch<unknown>,
+    getState: () => { users: userType }
+  ) => {
+    //サインインしているユーザのID
+    const uid = getState().users.uid;
+
+    //タイムスタンプの取得
+    const timestamp = FirebaseTimestamp.now();
+
+    //商品リスト
+    let products = new Array<orderProductsType>();
+    //売り切れ商品リスト(商品名だけ入る)
+    let soldOutProducts = new Array<string>();
+
+    //batchの使用
+    const batch = writeBatch(db);
+
+    //商品の品切れ状況確認
+    for (const product of productInCart) {
+      const productSnapShot = await getDoc(
+        doc(db, "products", product.productId)
+      );
+      const publications = productSnapShot.data()?.publication;
+
+      //その出版日の商品の在庫があるか否か
+      const updatePublications = publications.map(
+        (publication: { publication: string; quantity: number }) => {
+          if (publication.publication === product.publication) {
+            //売り切れ→品切れの配列に追加
+            if (publication.quantity === 0) {
+              soldOutProducts.push(product.name);
+              return publication;
+            }
+            return {
+              publication: publication.publication,
+              quantity: publication.quantity - 1, //在庫は-1する
+            };
+          } else {
+            return publication;
+          }
+        }
+      );
+
+      //注文商品配列の作成(注文履歴に使用)
+      products = [
+        ...products,
+        {
+          id: product.productId,
+          images: product.images,
+          name: product.name,
+          price: product.price,
+          publications: product.publication,
+        },
+      ];
+
+      //Firebaseの在庫書き換え
+      batch.update(doc(db, "products", product.productId), {
+        publications: updatePublications,
+      });
+
+      //Firebaseのカート書き換え(注文完了→カートを削除)
+      batch.delete(doc(doc(db, "users", uid), "cart", product.cartId));
+    }
+
+    //商品の在庫切れがあった場合発動(複数商品→配列の名前を「と」で繋ぐ)
+    if (soldOutProducts.length > 0) {
+      const errorMessage =
+        soldOutProducts.length > 1
+          ? soldOutProducts.join("と")
+          : soldOutProducts[0];
+
+      alert(
+        `大変申し訳ありません。${errorMessage}が在庫切れとなったため、注文処理を中断しました。`
+      );
+      return false;
+    } else {
+      //特に問題ない場合は処理を実行
+      batch
+        .commit()
+        .then(() => {
+          const orderRef = doc(collection(db, "users", uid, "orders"));
+          //今日から3日後を発送日としてそれをFirebaseのTimeStamp型に
+          const date = timestamp.toDate();
+          const shippingDate = FirebaseTimestamp.fromDate(
+            new Date(date.setDate(date.getDate() + 3))
+          );
+
+          //注文情報作成
+          const history = {
+            amount: amount,
+            created_at: timestamp,
+            id: orderRef.id,
+            products: products,
+            shipping_date: shippingDate,
+            updated_at: timestamp,
+          };
+
+          //注文情報をFirebaseのordersコレクションに格納
+          setDoc(orderRef, history).then(() => {
+            dispatch(push("/order/complete"));
+            alert("注文が完了しました");
+          });
+        })
+        .catch(() => {
+          //処理の失敗
+          alert(
+            "注文処理に失敗しました。通信環境をご確認の上、もう一度お試しください。"
+          );
+          return false;
+        });
+    }
   };
 };
