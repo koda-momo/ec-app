@@ -64,7 +64,9 @@ export const CartList = () => {
 
         <div className="module-spacer--medium" />
         <div className="p-grid__column">
-          <PrimaryButton label="レジへ進む" onClick={goToOder} />
+          {productsInCart.length > 0 && (
+            <PrimaryButton label="レジへ進む" onClick={goToOder} />
+          )}
           <div className="module-spacer--extra-small" />
           <GrayButton label="ショッピングを続ける" onClick={goToHome} />
         </div>

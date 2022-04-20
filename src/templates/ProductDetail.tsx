@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 //CSS
-import { makeStyles } from "@material-ui/core/styles";
+import { createStyles, makeStyles } from "@material-ui/core/styles";
 
 //Firebase
 import { doc, getDoc } from "firebase/firestore";
@@ -16,38 +16,40 @@ import { PublicationTable } from "../components/products/PublicationTable";
 import { addProductToCart } from "../reducks/users/operations";
 
 //CSS
-const useStyles = makeStyles((theme) => ({
-  sliderbox: {
-    [theme.breakpoints.down("sm")]: {
-      margin: "0 auto 24px auto",
-      height: 320,
-      //一番幅が狭いであろうスマホサイズ
-      width: 320,
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    sliderbox: {
+      [theme.breakpoints.down("sm")]: {
+        margin: "0 auto 24px auto",
+        height: 320,
+        //一番幅が狭いであろうスマホサイズ
+        width: 320,
+      },
+      [theme.breakpoints.up("md")]: {
+        margin: "0 auto",
+        height: 400,
+        width: 400,
+      },
     },
-    [theme.breakpoints.up("md")]: {
-      margin: "0 auto",
-      height: 400,
-      width: 400,
+    detail: {
+      textAlign: "left",
+      [theme.breakpoints.down("sm")]: {
+        margin: "0 auto 16px auto",
+        height: "auto",
+        //一番幅が狭いであろうスマホサイズ
+        width: 320,
+      },
+      [theme.breakpoints.up("md")]: {
+        margin: "0 auto",
+        height: "auto",
+        width: 400,
+      },
     },
-  },
-  detail: {
-    textAlign: "left",
-    [theme.breakpoints.down("sm")]: {
-      margin: "0 auto 16px auto",
-      height: "auto",
-      //一番幅が狭いであろうスマホサイズ
-      width: 320,
+    price: {
+      fontSize: 36,
     },
-    [theme.breakpoints.up("md")]: {
-      margin: "0 auto",
-      height: "auto",
-      width: 400,
-    },
-  },
-  price: {
-    fontSize: 36,
-  },
-}));
+  })
+);
 
 /**
  * 商品詳細.
@@ -104,6 +106,7 @@ export const ProductDetail = () => {
 
       //カートの中身
       const cartData = product && {
+        cartId: "",
         added_at: timestamp,
         description: product.description,
         field: product.field,
