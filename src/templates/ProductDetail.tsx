@@ -48,6 +48,9 @@ const useStyles = makeStyles((theme) =>
     price: {
       fontSize: 36,
     },
+    noItem: {
+      color: "red",
+    },
   })
 );
 
@@ -136,12 +139,16 @@ export const ProductDetail = () => {
               <h2 className="u-text__headline">{product.name}</h2>
               <p className={classes.price}> &yen;{formatPrice}</p>
               <div className="module-spacer--small" />
-              <PublicationTable
-                publications={product.publications}
-                addProduct={addProduct}
-              />
-              <div className="module-spacer--small" />
               <p>{returnCodeToBr(product.description)}</p>
+              <div className="module-spacer--small" />
+              {product.publications.length > 0 ? (
+                <PublicationTable
+                  publications={product.publications}
+                  addProduct={addProduct}
+                />
+              ) : (
+                <div className={classes.noItem}>在庫なし</div>
+              )}
             </div>
           </div>
         )}

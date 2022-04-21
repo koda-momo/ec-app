@@ -1,6 +1,7 @@
 import { push } from "connected-react-router";
 import { Dispatch } from "react";
 import {
+  fetchFavoAction,
   fetchOrderHistoryAction,
   fetchProductsInCartAction,
   signInAction,
@@ -237,7 +238,6 @@ export const addProductToCart = (cartData: cartType) => {
     //Firebaseにカート情報を追加
     await setDoc(cartRef, addedProduct);
     alert("商品をカートに追加しました");
-    dispatch(push("/"));
   };
 };
 
@@ -245,8 +245,26 @@ export const addProductToCart = (cartData: cartType) => {
  * Reduxのカート情報を書き換え.
  */
 export const fetchProductsInCart = (products: Array<cartType>) => {
-  return async (dispatch: Dispatch<unknown>) => {
-    dispatch(fetchProductsInCartAction(products));
+  return async (
+    dispatch: Dispatch<unknown>,
+    getState: () => { users: userType }
+  ) => {
+    const uid = getState().users.uid;
+
+    //Firebaseから注文履歴の取得
+    const ordersRef = collection(db, "users", uid, "cart");
+    const q = query(ordersRef, orderBy("added_at", "desc"));
+
+    getDocs(q).then((snapshots) => {
+      //仮の配列
+      const cartList = new Array<any>();
+
+      snapshots.forEach((snapshot) => {
+        cartList.push(snapshot.data());
+      });
+
+      dispatch(fetchProductsInCartAction(cartList));
+    });
   };
 };
 
@@ -266,13 +284,40 @@ export const fetchOrderHistory = () => {
 
     getDocs(q).then((snapshots) => {
       //仮の配列
-      const productList: any[] = [];
+      const productList = new Array<any>();
 
       snapshots.forEach((snapshot) => {
         productList.push(snapshot.data());
       });
       //storeの注文履歴を書き換え
       dispatch(fetchOrderHistoryAction(productList));
+    });
+  };
+};
+
+/**
+ * お気に入りリストの取得.
+ */
+export const fetchFavo = () => {
+  return async (
+    dispatch: Dispatch<unknown>,
+    getState: () => { users: userType }
+  ) => {
+    const uid = getState().users.uid;
+
+    //Firebaseから注文履歴の取得
+    const favosRef = collection(db, "users", uid, "favoList");
+    const q = query(favosRef, orderBy("updated_at", "desc"));
+
+    getDocs(q).then((snapshots) => {
+      //仮の配列
+      const favoList = new Array<any>();
+
+      snapshots.forEach((snapshot) => {
+        favoList.push(snapshot.data());
+      });
+      //storeの注文履歴を書き換え
+      dispatch(fetchFavoAction(favoList));
     });
   };
 };

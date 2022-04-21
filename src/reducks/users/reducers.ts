@@ -52,6 +52,14 @@ export const UserReducer = (
         ...state,
         orders: [...action.payload],
       };
+    /**
+     * お気に入り情報書き換え.
+     */
+    case Actions.FETCH_FAVO_ACTION:
+      return {
+        ...state,
+        favoList: [...action.payload],
+      };
 
     /**
      * 当てはまらなければ.

@@ -7,13 +7,14 @@ import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
-
 import { makeStyles } from "@material-ui/styles";
+
 import { cartType, userType } from "../../reducks/users/types";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getUserId } from "../../reducks/users/selecoters";
 import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase";
+import { push } from "connected-react-router";
 
 const useStyles = makeStyles({
   list: {
@@ -41,6 +42,7 @@ export const CartListItem: FC<Props> = memo(({ product }) => {
   const classes = useStyles();
   const selector = useSelector((state: { users: userType }) => state);
   const uid = getUserId(selector);
+  const dispatch = useDispatch();
 
   const image = product.images[0].path;
   const price = product.price.toLocaleString();
@@ -62,7 +64,12 @@ export const CartListItem: FC<Props> = memo(({ product }) => {
     <>
       <ListItem className={classes.list}>
         <ListItemAvatar>
-          <img className={classes.image} src={image} alt="商品画像" />
+          <img
+            className={classes.image}
+            src={image}
+            alt="商品画像"
+            onClick={() => dispatch(push(`/product/${product.productId}`))}
+          />
         </ListItemAvatar>
         <div className={classes.text}>
           <ListItemText

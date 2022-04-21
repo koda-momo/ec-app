@@ -28,6 +28,8 @@ const Router = () => {
         <Route path={"/cart"} component={CartList} />
         <Route exact path={"/order/confirm"} component={OrderConfirm} />
         <Route exact path={"/order/history"} component={OrderHistory} />
+        {/* <Route exact path={"/order/complete"} component={} /> */}
+        {/* <Route exact path={"/order/complete"} component={} /> */}
       </Auth>
     </Switch>
   );

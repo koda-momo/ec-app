@@ -1,4 +1,5 @@
 import { PayloadAction } from "@reduxjs/toolkit";
+import { productsType } from "../products/types";
 import { cartType, orderHisType } from "./types";
 
 //文字列を定数に入れてあげる(Reducerで使う際に依頼名を判断するため)
@@ -47,17 +48,10 @@ export const signOutAction = () => {
  */
 export const FETCH_PRODUCTS_IN_CARTACTION = "FETCH_PRODUCTS_IN_CARTACTION";
 
-export const fetchProductsInCartAction = (
-  products: Array<cartType>
-): PayloadAction<
-  { products: Array<cartType> },
-  typeof FETCH_PRODUCTS_IN_CARTACTION
-> => {
+export const fetchProductsInCartAction = (cart: Array<cartType>) => {
   return {
     type: "FETCH_PRODUCTS_IN_CARTACTION",
-    payload: {
-      products,
-    },
+    payload: cart,
   };
 };
 
@@ -70,5 +64,17 @@ export const fetchOrderHistoryAction = (history: Array<orderHisType>) => {
   return {
     type: "FETCH_ORDER_HISTORY_ACTION",
     payload: history,
+  };
+};
+
+/**
+ * お気に入りの取得.
+ * @params favoList - お気に入りした商品情報
+ */
+export const FETCH_FAVO_ACTION = "FETCH_FAVO_ACTION";
+export const fetchFavoAction = (favoList: Array<productsType>) => {
+  return {
+    type: "FETCH_FAVO_ACTION",
+    payload: favoList,
   };
 };
