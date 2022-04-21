@@ -62,14 +62,14 @@ const useStyles = makeStyles((theme) =>
     },
     iconCell: {
       padding: 0,
-      height: 20,
-      width: 20,
+      height: 40,
+      width: 40,
     },
     iconFavoCell: {
       color: "red",
       padding: 0,
-      height: 20,
-      width: 20,
+      height: 40,
+      width: 40,
     },
   })
 );

@@ -172,7 +172,7 @@ export const CloseableDrawer: FC<Props> = memo(
               keepMounted: true,
             }}
           >
-            <div onClick={(e) => onClose(e)}>
+            <div>
               <div className={classes.searchField}>
                 <TextInput
                   fullWidth={false}
@@ -189,7 +189,7 @@ export const CloseableDrawer: FC<Props> = memo(
                 </IconButton>
               </div>
               <Divider />
-              <List>
+              <List onClick={(e) => onClose(e)}>
                 {menus.map((menu, i) => (
                   <ListItem
                     button
@@ -212,7 +212,7 @@ export const CloseableDrawer: FC<Props> = memo(
                 </ListItem>
               </List>
               <Divider />
-              <List>
+              <List onClick={(e) => onClose(e)}>
                 {filters.map((filter, i) => (
                   <ListItem
                     button

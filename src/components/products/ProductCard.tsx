@@ -18,6 +18,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 //icon
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { deleteProduct } from "../../reducks/products/operations";
+import { useEditImage } from "../../hooks/useEditImage";
 
 type Props = {
   id: string; //商品ID
