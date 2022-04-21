@@ -328,6 +328,23 @@ export const fetchFavo = () => {
 };
 
 /**
+ * お気に入りから削除.
+ * @param id - 削除したいお気に入りリストのID
+ */
+export const deleteFavo = (id: string) => {
+  return async (
+    dispatch: Dispatch<unknown>,
+    getState: () => { users: userType }
+  ) => {
+    //ログインしているユーザのIDをReduxから取得
+    const uid = getState().users.uid;
+
+    deleteDoc(doc(db, "users", uid, "favoList", id));
+    alert("お気に入りから削除しました");
+  };
+};
+
+/**
  * お気に入りに追加.
  */
 export const addFavoList = (productItem: productsType) => {
@@ -347,10 +364,10 @@ export const addFavoList = (productItem: productsType) => {
     const querySnapshot = await getDocs(
       collection(db, "users", uid, "favoList")
     );
-    let alreadyFavo = false;
+    let alreadyFavo = "";
     querySnapshot.forEach((snapshot) => {
       if (snapshot.data().productItem.name === productItem.name) {
-        alreadyFavo = true;
+        alreadyFavo = snapshot.data().id;
       }
     });
 
@@ -363,28 +380,11 @@ export const addFavoList = (productItem: productsType) => {
     };
 
     //Firebaseに追加
-    if (!alreadyFavo) {
+    if (alreadyFavo === "") {
       await setDoc(favoRef, data);
       alert("商品をお気に入りリストに登録しました。");
     } else {
-      alert("既に登録済の商品です");
+      dispatch(deleteFavo(alreadyFavo));
     }
-  };
-};
-
-/**
- * お気に入りから削除.
- * @param id - 削除したいお気に入りリストのID
- */
-export const deleteFavo = (id: string) => {
-  return async (
-    dispatch: Dispatch<unknown>,
-    getState: () => { users: userType }
-  ) => {
-    //ログインしているユーザのIDをReduxから取得
-    const uid = getState().users.uid;
-
-    deleteDoc(doc(db, "users", uid, "favoList", id));
-    alert("お気に入りから削除しました");
   };
 };

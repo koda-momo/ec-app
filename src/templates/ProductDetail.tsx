@@ -16,6 +16,8 @@ import { ImageSwiper } from "../components/products/ImageSwiper";
 import { PublicationTable } from "../components/products/PublicationTable";
 import { addFavoList, addProductToCart } from "../reducks/users/operations";
 import { IconButton } from "@material-ui/core";
+import { userType } from "../reducks/users/types";
+import { getFavoList } from "../reducks/users/selecoters";
 
 //CSS
 const useStyles = makeStyles((theme) =>
@@ -63,6 +65,12 @@ const useStyles = makeStyles((theme) =>
       height: 20,
       width: 20,
     },
+    iconFavoCell: {
+      color: "red",
+      padding: 0,
+      height: 20,
+      width: 20,
+    },
   })
 );
 
@@ -76,6 +84,7 @@ export const ProductDetail = () => {
   const selector = useSelector(
     (state: { router: { location: { pathname: string } } }) => state
   );
+  const favoSelector = useSelector((state: { users: userType }) => state);
   //CSS
   const classes = useStyles();
 
@@ -98,6 +107,9 @@ export const ProductDetail = () => {
     }
   };
 
+  //お気に入り済か否か
+  const [isFavo, setIsFavo] = useState<boolean>();
+
   /**
    * IDを基に商品情報を1件取得.
    */
@@ -105,6 +117,14 @@ export const ProductDetail = () => {
     getDoc(doc(db, "products", id)).then((snapShot) => {
       const data = snapShot.data() as productsType;
       setProduct(data);
+
+      //お気に入りリスト登録済商品か否か
+      const favoList = getFavoList(favoSelector);
+      for (const favo of favoList) {
+        if (data.name === favo.productItem.name) {
+          setIsFavo(true);
+        }
+      }
     });
   }, [id]);
 
@@ -139,6 +159,17 @@ export const ProductDetail = () => {
     [dispatch, product]
   );
 
+  /**
+   * お気に入りに追加.
+   */
+  const addFavo = useCallback(
+    (product: productsType) => {
+      dispatch(addFavoList(product));
+      setIsFavo(!isFavo);
+    },
+    [dispatch, isFavo]
+  );
+
   return (
     <>
       <section className="c-section-wrapin">
@@ -151,12 +182,21 @@ export const ProductDetail = () => {
               <h2 className="u-text__headline">{product.name}</h2>
               <div className={classes.priceAndFavo}>
                 <p className={classes.price}> &yen;{formatPrice}</p>
-                <IconButton
-                  onClick={() => dispatch(addFavoList(product))}
-                  className={classes.iconCell}
-                >
-                  <FavoriteIcon />
-                </IconButton>
+                {isFavo ? (
+                  <IconButton
+                    onClick={() => addFavo(product)}
+                    className={classes.iconFavoCell}
+                  >
+                    <FavoriteIcon />
+                  </IconButton>
+                ) : (
+                  <IconButton
+                    onClick={() => addFavo(product)}
+                    className={classes.iconCell}
+                  >
+                    <FavoriteIcon />
+                  </IconButton>
+                )}
               </div>
               <div className="module-spacer--small" />
               <p>{returnCodeToBr(product.description)}</p>
