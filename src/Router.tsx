@@ -31,7 +31,7 @@ const Router = () => {
         <Route exact path={"/order/confirm"} component={OrderConfirm} />
         <Route exact path={"/order/history"} component={OrderHistory} />
         <Route exact path={"/favo"} component={FavoList} />
-        <Route exact path={"//mypage"} component={MyPage} />
+        <Route exact path={"/mypage"} component={MyPage} />
         {/* <Route exact path={"/order/complete"} component={} /> */}
       </Auth>
     </Switch>
