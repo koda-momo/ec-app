@@ -57,8 +57,8 @@ export const CartList = () => {
         <h2 className="u-text__headline">ショッピングカート</h2>
         <List className={classes.root}>
           {productsInCart.length > 0 &&
-            productsInCart.map((product) => (
-              <CartListItem product={product} key={product.cartId} />
+            productsInCart.map((product, i) => (
+              <CartListItem product={product} key={i} />
             ))}
         </List>
 

@@ -44,8 +44,6 @@ export const useEditImage = (
       //アップロードが完了するとその画像が取得できるURLが返ってくる
       const downloadURL = await getDownloadURL(snapshot.ref);
 
-      console.dir("ダウンロードURL:" + JSON.stringify(downloadURL));
-
       //表示用画像配列の作成(この書き方をするとsetメソッド使用でも.pushしなくて良い)
       const newImage = { id: fileName, path: downloadURL };
       setImages((prevState: Array<{ id: string; path: string }>) => [

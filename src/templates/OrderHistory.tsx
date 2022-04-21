@@ -45,8 +45,8 @@ const OrderHistory = () => {
         <h2 className="u-text__headline">注文履歴</h2>
         {orders.length > 0 ? (
           <List className={classes.orderList}>
-            {orders.map((order) => (
-              <OrderHistoryItem order={order} key={order.id} />
+            {orders.map((order, i) => (
+              <OrderHistoryItem order={order} key={i} />
             ))}
           </List>
         ) : (

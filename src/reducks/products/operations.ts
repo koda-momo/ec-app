@@ -12,9 +12,10 @@ import {
   where,
   writeBatch,
 } from "firebase/firestore";
+import { deleteObject, ref } from "firebase/storage";
 import { Dispatch } from "react";
 import { useSelector } from "react-redux";
-import { db, FirebaseTimestamp } from "../../firebase";
+import { db, FirebaseTimestamp, storage } from "../../firebase";
 import { cartType, userType } from "../users/types";
 import { deleteProductAction, fetchProductsAction } from "./actions";
 import { getProducts } from "./selectors";
@@ -126,7 +127,6 @@ export const deleteProduct = (id: string) => {
     const selector = useSelector(
       (state: { products: { list: [productsType] } }) => state
     );
-
     const prevProducts = getProducts(selector).products.list;
     const newPrevProducts = prevProducts.filter((item) => item.id !== id);
     dispatch(deleteProductAction(newPrevProducts));

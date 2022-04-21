@@ -32,8 +32,8 @@ export const ImageSwiper: FC<Props> = memo(({ images }) => {
             <img src={NoImage} alt="画像なし" />
           </div>
         ) : (
-          images.map((image) => (
-            <div className="p-media__thumb" key={image.id}>
+          images.map((image, i) => (
+            <div className="p-media__thumb" key={i}>
               <img src={image.path} alt="商品画像" />
             </div>
           ))

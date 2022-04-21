@@ -49,14 +49,12 @@ export const OrderedProducts: FC<Props> = memo(({ products }) => {
     [dispatch]
   );
 
-  console.dir(JSON.stringify(products));
-
   return (
     <>
       <List>
-        {products.map((product) => (
-          <>
-            <ListItem className={classes.list} key={product.id}>
+        {products.map((product, i) => (
+          <div key={i}>
+            <ListItem className={classes.list}>
               <ListItemAvatar>
                 <img
                   className={classes.image}
@@ -77,7 +75,7 @@ export const OrderedProducts: FC<Props> = memo(({ products }) => {
               />
             </ListItem>
             <Divider />
-          </>
+          </div>
         ))}
       </List>
     </>

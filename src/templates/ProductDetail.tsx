@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 //CSS
 import { createStyles, makeStyles } from "@material-ui/core/styles";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 //Firebase
 import { doc, getDoc } from "firebase/firestore";
@@ -13,7 +14,10 @@ import { productsType } from "../reducks/products/types";
 import HTMLReactParser from "html-react-parser";
 import { ImageSwiper } from "../components/products/ImageSwiper";
 import { PublicationTable } from "../components/products/PublicationTable";
-import { addProductToCart } from "../reducks/users/operations";
+import { addFavoList, addProductToCart } from "../reducks/users/operations";
+import { IconButton } from "@material-ui/core";
+import { userType } from "../reducks/users/types";
+import { getFavoList } from "../reducks/users/selecoters";
 
 //CSS
 const useStyles = makeStyles((theme) =>
@@ -48,6 +52,25 @@ const useStyles = makeStyles((theme) =>
     price: {
       fontSize: 36,
     },
+    noItem: {
+      color: "red",
+    },
+    priceAndFavo: {
+      display: "flex",
+      gap: 5,
+      alignItems: "center",
+    },
+    iconCell: {
+      padding: 0,
+      height: 40,
+      width: 40,
+    },
+    iconFavoCell: {
+      color: "red",
+      padding: 0,
+      height: 40,
+      width: 40,
+    },
   })
 );
 
@@ -61,6 +84,7 @@ export const ProductDetail = () => {
   const selector = useSelector(
     (state: { router: { location: { pathname: string } } }) => state
   );
+  const favoSelector = useSelector((state: { users: userType }) => state);
   //CSS
   const classes = useStyles();
 
@@ -83,6 +107,9 @@ export const ProductDetail = () => {
     }
   };
 
+  //お気に入り済か否か
+  const [isFavo, setIsFavo] = useState<boolean>();
+
   /**
    * IDを基に商品情報を1件取得.
    */
@@ -90,6 +117,14 @@ export const ProductDetail = () => {
     getDoc(doc(db, "products", id)).then((snapShot) => {
       const data = snapShot.data() as productsType;
       setProduct(data);
+
+      //お気に入りリスト登録済商品か否か
+      const favoList = getFavoList(favoSelector);
+      for (const favo of favoList) {
+        if (data.name === favo.productItem.name) {
+          setIsFavo(true);
+        }
+      }
     });
   }, [id]);
 
@@ -124,6 +159,17 @@ export const ProductDetail = () => {
     [dispatch, product]
   );
 
+  /**
+   * お気に入りに追加.
+   */
+  const addFavo = useCallback(
+    (product: productsType) => {
+      dispatch(addFavoList(product));
+      setIsFavo(!isFavo);
+    },
+    [dispatch, isFavo]
+  );
+
   return (
     <>
       <section className="c-section-wrapin">
@@ -134,14 +180,35 @@ export const ProductDetail = () => {
             </div>
             <div className={classes.detail}>
               <h2 className="u-text__headline">{product.name}</h2>
-              <p className={classes.price}> &yen;{formatPrice}</p>
-              <div className="module-spacer--small" />
-              <PublicationTable
-                publications={product.publications}
-                addProduct={addProduct}
-              />
+              <div className={classes.priceAndFavo}>
+                <p className={classes.price}> &yen;{formatPrice}</p>
+                {isFavo ? (
+                  <IconButton
+                    onClick={() => addFavo(product)}
+                    className={classes.iconFavoCell}
+                  >
+                    <FavoriteIcon />
+                  </IconButton>
+                ) : (
+                  <IconButton
+                    onClick={() => addFavo(product)}
+                    className={classes.iconCell}
+                  >
+                    <FavoriteIcon />
+                  </IconButton>
+                )}
+              </div>
               <div className="module-spacer--small" />
               <p>{returnCodeToBr(product.description)}</p>
+              <div className="module-spacer--small" />
+              {product.publications.length > 0 ? (
+                <PublicationTable
+                  publications={product.publications}
+                  addProduct={addProduct}
+                />
+              ) : (
+                <div className={classes.noItem}>在庫なし</div>
+              )}
             </div>
           </div>
         )}

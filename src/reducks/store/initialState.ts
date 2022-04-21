@@ -13,6 +13,8 @@ const initialState = {
     cart: [],
     //注文履歴
     orders: [],
+    //お気に入りリスト
+    favoList: [],
   },
   products: {
     list: [],

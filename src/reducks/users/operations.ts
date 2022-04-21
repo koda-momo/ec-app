@@ -1,6 +1,7 @@
 import { push } from "connected-react-router";
 import { Dispatch } from "react";
 import {
+  fetchFavoAction,
   fetchOrderHistoryAction,
   fetchProductsInCartAction,
   signInAction,
@@ -11,7 +12,9 @@ import {
 import { auth, db, FirebaseTimestamp } from "../../firebase/index";
 import {
   collection,
+  deleteDoc,
   doc,
+  documentId,
   getDoc,
   getDocs,
   orderBy,
@@ -24,6 +27,9 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { cartType, orderHisType, userType } from "./types";
+import { productsType } from "../products/types";
+import { useSelector } from "react-redux";
+import { getFavoList } from "./selecoters";
 
 /**
  * signup.
@@ -237,7 +243,6 @@ export const addProductToCart = (cartData: cartType) => {
     //Firebaseにカート情報を追加
     await setDoc(cartRef, addedProduct);
     alert("商品をカートに追加しました");
-    dispatch(push("/"));
   };
 };
 
@@ -245,8 +250,26 @@ export const addProductToCart = (cartData: cartType) => {
  * Reduxのカート情報を書き換え.
  */
 export const fetchProductsInCart = (products: Array<cartType>) => {
-  return async (dispatch: Dispatch<unknown>) => {
-    dispatch(fetchProductsInCartAction(products));
+  return async (
+    dispatch: Dispatch<unknown>,
+    getState: () => { users: userType }
+  ) => {
+    const uid = getState().users.uid;
+
+    //Firebaseから注文履歴の取得
+    const ordersRef = collection(db, "users", uid, "cart");
+    const q = query(ordersRef, orderBy("added_at", "desc"));
+
+    getDocs(q).then((snapshots) => {
+      //仮の配列
+      const cartList = new Array<any>();
+
+      snapshots.forEach((snapshot) => {
+        cartList.push(snapshot.data());
+      });
+
+      dispatch(fetchProductsInCartAction(cartList));
+    });
   };
 };
 
@@ -266,7 +289,7 @@ export const fetchOrderHistory = () => {
 
     getDocs(q).then((snapshots) => {
       //仮の配列
-      const productList: any[] = [];
+      const productList = new Array<any>();
 
       snapshots.forEach((snapshot) => {
         productList.push(snapshot.data());
@@ -274,5 +297,94 @@ export const fetchOrderHistory = () => {
       //storeの注文履歴を書き換え
       dispatch(fetchOrderHistoryAction(productList));
     });
+  };
+};
+
+/**
+ * お気に入りリストの取得.
+ */
+export const fetchFavo = () => {
+  return async (
+    dispatch: Dispatch<unknown>,
+    getState: () => { users: userType }
+  ) => {
+    const uid = getState().users.uid;
+
+    //Firebaseから注文履歴の取得
+    const favosRef = collection(db, "users", uid, "favoList");
+    const q = query(favosRef, orderBy("updated_at", "desc"));
+
+    getDocs(q).then((snapshots) => {
+      //仮の配列
+      const favoList = new Array<any>();
+
+      snapshots.forEach((snapshot) => {
+        favoList.push(snapshot.data());
+      });
+      //storeの注文履歴を書き換え
+      dispatch(fetchFavoAction(favoList));
+    });
+  };
+};
+
+/**
+ * お気に入りから削除.
+ * @param id - 削除したいお気に入りリストのID
+ */
+export const deleteFavo = (id: string) => {
+  return async (
+    dispatch: Dispatch<unknown>,
+    getState: () => { users: userType }
+  ) => {
+    //ログインしているユーザのIDをReduxから取得
+    const uid = getState().users.uid;
+
+    deleteDoc(doc(db, "users", uid, "favoList", id));
+    alert("お気に入りから削除しました");
+  };
+};
+
+/**
+ * お気に入りに追加.
+ */
+export const addFavoList = (productItem: productsType) => {
+  return async (
+    dispatch: Dispatch<unknown>,
+    getState: () => { users: userType }
+  ) => {
+    //ログインしているユーザのIDをReduxから取得
+    const uid = getState().users.uid;
+    //タイムスタンプの作成
+    const timestamp = FirebaseTimestamp.now();
+
+    //IDの作成
+    const favoRef = doc(collection(db, "users", uid, "favoList"));
+
+    //既に登録されている商品かをチェック
+    const querySnapshot = await getDocs(
+      collection(db, "users", uid, "favoList")
+    );
+    let alreadyFavo = "";
+    querySnapshot.forEach((snapshot) => {
+      if (snapshot.data().productItem.name === productItem.name) {
+        alreadyFavo = snapshot.data().id;
+      }
+    });
+
+    //登録するデータ
+    const data = {
+      id: favoRef.id,
+      created_at: timestamp,
+      productItem: productItem,
+      updated_at: timestamp,
+    };
+
+    //Firebaseに追加
+    if (alreadyFavo === "") {
+      await setDoc(favoRef, data);
+      alert("商品をお気に入りリストに登録しました。");
+    } else {
+      dispatch(deleteFavo(alreadyFavo));
+    }
   };
 };
