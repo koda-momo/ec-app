@@ -31,3 +31,11 @@ export const getProductsInCart = createSelector(
   [userSelector],
   (state) => state.cart
 );
+
+/**
+ * 注文履歴取得.
+ */
+export const getOrdersHistory = createSelector(
+  [userSelector],
+  (state) => state.orders
+);

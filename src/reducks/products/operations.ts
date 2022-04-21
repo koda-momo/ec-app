@@ -3,11 +3,13 @@ import {
   collection,
   deleteDoc,
   doc,
+  DocumentData,
   getDoc,
   getDocs,
   orderBy,
   query,
   setDoc,
+  where,
   writeBatch,
 } from "firebase/firestore";
 import { Dispatch } from "react";
@@ -71,28 +73,56 @@ export const saveProduct = (
  * 商品一覧の取得.
  * @returns
  */
-export const fetchProducts = () => {
+export const fetchProducts = (field: string, category: string) => {
   return async (dispatch: Dispatch<unknown>) => {
     //DBからデータの取得:並び替え(更新日順,降順)
-    let q = query(productsRef, orderBy("updated_at", "desc"));
-    const querySnapshot = await getDocs(q);
+    let q = query(productsRef, orderBy("update", "desc"));
 
-    const productList = new Array<productsType>();
+    //もし分野で絞っていたら搾る設定をつけて叩く
+    q =
+      field !== ""
+        ? query(
+            productsRef,
+            where("field", "==", field),
+            orderBy("update", "desc")
+          )
+        : q;
 
-    querySnapshot.forEach((item) => {
-      const product = item.data() as productsType;
-      productList.push(product);
+    //もしカテゴリで絞っていたら搾る設定をつけて叩く
+    q =
+      category !== ""
+        ? query(
+            productsRef,
+            where("category", "==", category),
+            orderBy("update", "desc")
+          )
+        : q;
+
+    //取得したデータを仮の配列にpush
+    getDocs(q).then((snapshots) => {
+      //仮の配列
+      const productList: any[] = [];
+
+      snapshots.forEach((snapshot) => {
+        productList.push(snapshot.data());
+      });
+
+      //Reduxの方も書き換え
+      dispatch(fetchProductsAction(productList));
     });
-    dispatch(fetchProductsAction(productList));
   };
 };
 
+/**
+ * 商品の削除.
+ * @param id - 削除したい商品ID
+ */
 export const deleteProduct = (id: string) => {
   return async (dispatch: Dispatch<unknown>) => {
     //DBから削除
     await deleteDoc(doc(db, "products", id));
 
-    //stateも書き換え
+    //Reduxの方も書き換え
     const selector = useSelector(
       (state: { products: { list: [productsType] } }) => state
     );
@@ -133,7 +163,7 @@ export const orderProduct = (
       const productSnapShot = await getDoc(
         doc(db, "products", product.productId)
       );
-      const publications = productSnapShot.data()?.publication;
+      const publications = productSnapShot.data()?.publications;
 
       //その出版日の商品の在庫があるか否か
       const updatePublications = publications.map(

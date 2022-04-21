@@ -19,16 +19,16 @@ const Router = () => {
       <Route exact path={"/signup"} component={SignUp} />
       <Route exact path={"/signin"} component={SignIn} />
       <Route exact path={"/signin/reset"} component={Reset} />
-      <Route exact path={"/order/confirm"} component={OrderConfirm} />
-      <Route exact path={"/order/history"} component={OrderHistory} />
 
       {/* ログインしていなければ入れないページ */}
-      {/* <Auth> */}
-      <Route exact path={"(/)?"} component={ProductList} />
-      <Route path={"/edit/(:id)?"} component={ProductEdit} />
-      <Route path={"/product/(:id)?"} component={ProductDetail} />
-      <Route path={"/cart"} component={CartList} />
-      {/* </Auth> */}
+      <Auth>
+        <Route exact path={"(/)?"} component={ProductList} />
+        <Route path={"/edit/(:id)?"} component={ProductEdit} />
+        <Route path={"/product/(:id)?"} component={ProductDetail} />
+        <Route path={"/cart"} component={CartList} />
+        <Route exact path={"/order/confirm"} component={OrderConfirm} />
+        <Route exact path={"/order/history"} component={OrderHistory} />
+      </Auth>
     </Switch>
   );
 };

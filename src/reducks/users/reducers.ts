@@ -15,7 +15,7 @@ import { userType, cartType } from "./types";
  */
 export const UserReducer = (
   state = initialState.users,
-  action: PayloadAction<any>
+  action: { type: string; payload: any }
 ) => {
   switch (action.type) {
     //Actionsで作成した指示のどれを使うか
@@ -44,6 +44,15 @@ export const UserReducer = (
         ...state,
         cart: [...action.payload],
       };
+    /**
+     * 注文履歴書き換え.
+     */
+    case Actions.FETCH_ORDER_HISTORY_ACTION:
+      return {
+        ...state,
+        orders: [...action.payload],
+      };
+
     /**
      * 当てはまらなければ.
      */

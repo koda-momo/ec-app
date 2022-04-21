@@ -1,4 +1,11 @@
-import { doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ImageArea } from "../components/products/ImageArea";
@@ -40,13 +47,9 @@ export const ProductEdit = () => {
   }>({ seconds: 0, nanoseconds: 0 });
 
   //カテゴリ一覧
-  const [categories] = useState([
-    { id: "react", name: "React" },
-    { id: "next", name: "Next.js" },
-    { id: "vue", name: "Vue.js" },
-    { id: "design", name: "デザイン" },
-    { id: "php", name: "PHP" },
-  ]);
+  const [categories, setCategories] = useState<
+    Array<{ id: string; name: string }>
+  >([]);
 
   //分野
   const [fields] = useState([
@@ -74,6 +77,24 @@ export const ProductEdit = () => {
    */
   const inputPrice = useCallback((e) => {
     setPrice(e.target.value);
+  }, []);
+
+  /**
+   * カテゴリ一覧をFirebaseから取得.
+   */
+  useEffect(() => {
+    const q = query(collection(db, "categories"), orderBy("order", "asc"));
+    getDocs(q).then((snapshots) => {
+      const array = new Array<{ id: string; name: string }>();
+      snapshots.forEach((snapshot) => {
+        const data = snapshot.data();
+        array.push({
+          id: data.id,
+          name: data.name,
+        });
+      });
+      setCategories(array);
+    });
   }, []);
 
   /**
