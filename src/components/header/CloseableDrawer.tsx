@@ -60,16 +60,6 @@ export const CloseableDrawer: FC<Props> = memo(
     //dispatch
     const dispatch = useDispatch();
 
-    //検索キーワード
-    const [keyword, setKeyword] = useState("");
-
-    /**
-     * 検索キーワードを代入.
-     */
-    const imputKeyword = useCallback((e: any) => {
-      setKeyword(e.target.value);
-    }, []);
-
     /**
      * メニューの選択.
      */
@@ -82,7 +72,28 @@ export const CloseableDrawer: FC<Props> = memo(
       [dispatch, onClose]
     );
 
-    //検索ワード
+    //検索キーワード
+    const [keyword, setKeyword] = useState("");
+
+    /**
+     * 検索キーワードを代入.
+     */
+    const imputKeyword = useCallback((e: any) => {
+      setKeyword(e.target.value);
+    }, []);
+
+    /**
+     * 検索.
+     */
+    const search = useCallback(
+      (e) => {
+        selectMenu(e, `/?search=${keyword.toUpperCase()}`);
+        setKeyword("");
+      },
+      [keyword, selectMenu]
+    );
+
+    //搾って表示ワード
     const [filters, setFilters] = useState([
       {
         func: selectMenu,
@@ -183,7 +194,7 @@ export const CloseableDrawer: FC<Props> = memo(
                   type="text"
                   value={keyword}
                 />
-                <IconButton>
+                <IconButton onClick={(e) => search(e)}>
                   <SearchIcon />
                 </IconButton>
               </div>

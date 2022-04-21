@@ -39,6 +39,8 @@ export const ProductList = () => {
   const category = /^\?category=/.test(query)
     ? query.split("?category=")[1]
     : "";
+  //URLの後ろから検索ワードを取得
+  const search = /^\?search=/.test(query) ? query.split("?search=")[1] : "";
 
   //商品一覧
   const products = getProducts(productSelector).products.list;
@@ -48,7 +50,7 @@ export const ProductList = () => {
    */
   useEffect(() => {
     //Firebaseの情報を取得
-    dispatch(fetchProducts(field, category));
+    dispatch(fetchProducts(field, category, search));
   }, [query]);
 
   return (
