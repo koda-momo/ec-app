@@ -3,7 +3,6 @@ import {
   collection,
   deleteDoc,
   doc,
-  DocumentData,
   getDoc,
   getDocs,
   orderBy,
@@ -12,7 +11,6 @@ import {
   where,
   writeBatch,
 } from "firebase/firestore";
-import { deleteObject, ref } from "firebase/storage";
 import { Dispatch } from "react";
 import { useSelector } from "react-redux";
 import { db, FirebaseTimestamp, storage } from "../../firebase";
@@ -250,7 +248,6 @@ export const orderProduct = (
           //注文情報をFirebaseのordersコレクションに格納
           setDoc(orderRef, history).then(() => {
             dispatch(push("/order/complete"));
-            alert("注文が完了しました");
           });
         })
         .catch(() => {
