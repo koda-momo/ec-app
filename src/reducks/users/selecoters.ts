@@ -17,11 +17,27 @@ export const getUserName = createSelector(
 );
 
 /**
+ * 画像パス名取得.
+ */
+export const getUserImage = createSelector(
+  [userSelector],
+  (state) => state.userImage
+);
+
+/**
  * 現在サインインしているか否か.
  */
 export const getIsSignedIn = createSelector(
   [userSelector],
   (state) => state.isSignedIn
+);
+
+/**
+ * 役割取得.
+ */
+export const getUserRole = createSelector(
+  [userSelector],
+  (state) => state.role
 );
 
 /**

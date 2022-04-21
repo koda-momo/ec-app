@@ -3,7 +3,6 @@ import {
   collection,
   deleteDoc,
   doc,
-  DocumentData,
   getDoc,
   getDocs,
   orderBy,
@@ -12,7 +11,6 @@ import {
   where,
   writeBatch,
 } from "firebase/firestore";
-import { deleteObject, ref } from "firebase/storage";
 import { Dispatch } from "react";
 import { useSelector } from "react-redux";
 import { db, FirebaseTimestamp, storage } from "../../firebase";
@@ -74,7 +72,11 @@ export const saveProduct = (
  * 商品一覧の取得.
  * @returns
  */
-export const fetchProducts = (field: string, category: string) => {
+export const fetchProducts = (
+  field: string,
+  category: string,
+  search: string
+) => {
   return async (dispatch: Dispatch<unknown>) => {
     //DBからデータの取得:並び替え(更新日順,降順)
     let q = query(productsRef, orderBy("update", "desc"));
@@ -102,11 +104,16 @@ export const fetchProducts = (field: string, category: string) => {
     //取得したデータを仮の配列にpush
     getDocs(q).then((snapshots) => {
       //仮の配列
-      const productList: any[] = [];
+      let productList = Array<productsType>();
 
       snapshots.forEach((snapshot) => {
-        productList.push(snapshot.data());
+        productList.push(snapshot.data() as productsType);
       });
+      if (search !== "") {
+        productList = productList.filter((product) =>
+          product.name.toUpperCase().match(search)
+        );
+      }
 
       //Reduxの方も書き換え
       dispatch(fetchProductsAction(productList));
@@ -241,7 +248,6 @@ export const orderProduct = (
           //注文情報をFirebaseのordersコレクションに格納
           setDoc(orderRef, history).then(() => {
             dispatch(push("/order/complete"));
-            alert("注文が完了しました");
           });
         })
         .catch(() => {

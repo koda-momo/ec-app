@@ -14,7 +14,6 @@ import {
   collection,
   deleteDoc,
   doc,
-  documentId,
   getDoc,
   getDocs,
   orderBy,
@@ -26,10 +25,8 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { cartType, orderHisType, userType } from "./types";
+import { cartType, userType } from "./types";
 import { productsType } from "../products/types";
-import { useSelector } from "react-redux";
-import { getFavoList } from "./selecoters";
 
 /**
  * signup.
@@ -38,7 +35,8 @@ export const signUp = (
   userName: string,
   email: string,
   password: string,
-  confirmPassword: string
+  confirmPassword: string,
+  userImage: string
 ) => {
   return async (dispatch: Dispatch<unknown>) => {
     //validation
@@ -46,7 +44,8 @@ export const signUp = (
       userName === "" ||
       email === "" ||
       password === "" ||
-      confirmPassword === ""
+      confirmPassword === "" ||
+      userImage === ""
     ) {
       alert("必須項目が未入力です。");
       //途中で離脱の場合は、falseを返す
@@ -55,6 +54,11 @@ export const signUp = (
 
     if (password !== confirmPassword) {
       alert("パスワードが一致しません。もう一度入力して下さい。");
+      return false;
+    }
+
+    if (password.length < 6) {
+      alert("パスワードは6文字以上で入力して下さい。");
       return false;
     }
 
@@ -74,6 +78,7 @@ export const signUp = (
             uid: uid,
             updated_at: timestamp,
             userName: userName,
+            userImage: userImage,
           };
 
           //ユーザ情報をFirebaseのDBにも登録(該当のidに情報を入れる)
@@ -119,6 +124,7 @@ export const signIn = (email: string, password: string) => {
                 id: data.uid,
                 role: data.role,
                 userName: data.userName,
+                userImage: data.userImage,
               })
             );
           }
@@ -169,6 +175,7 @@ export const listenAuthState = () => {
                 id: data.uid,
                 role: data.role,
                 userName: data.userName,
+                userImage: data.userImage,
               })
             );
           }

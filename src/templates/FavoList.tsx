@@ -56,7 +56,7 @@ export const FavoList = () => {
       <section className="c-section-wrapin">
         <h2 className="u-text__headline">お気に入りリスト</h2>
         <List className={classes.root}>
-          {favoList.length > 0 ? (
+          {favoList?.length > 0 ? (
             favoList.map((favo, i) => (
               <FavoItem
                 favoItem={favo}

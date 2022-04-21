@@ -37,7 +37,9 @@ export type favoType = {
 export type userType = {
   isSignedIn: boolean;
   uid: string;
+  role: string;
   userName: string;
+  userImage: string;
   cart: Array<cartType>;
   orders: Array<orderHisType>;
   favoList: Array<favoType>;

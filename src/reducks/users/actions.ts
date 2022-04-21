@@ -14,6 +14,7 @@ export const signInAction = (userState: {
   id: string;
   role: string;
   userName: string;
+  userImage: string;
 }) => {
   return {
     type: "SIGN_IN", //依頼名
@@ -22,6 +23,7 @@ export const signInAction = (userState: {
       role: userState.role,
       uid: userState.id,
       userName: userState.userName,
+      userImage: userState.userImage,
     },
   };
 };

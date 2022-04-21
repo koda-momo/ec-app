@@ -20,10 +20,12 @@ import AddCircleIcon from "@material-ui/icons/AddCircle";
 import HistoryIcon from "@material-ui/icons/History";
 import PersonIcon from "@material-ui/icons/Person";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { push } from "connected-react-router";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "../../firebase";
+import { getUserRole } from "../../reducks/users/selecoters";
+import { userType } from "../../reducks/users/types";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -58,16 +60,6 @@ export const CloseableDrawer: FC<Props> = memo(
     //dispatch
     const dispatch = useDispatch();
 
-    //検索キーワード
-    const [keyword, setKeyword] = useState("");
-
-    /**
-     * 検索キーワードを代入.
-     */
-    const imputKeyword = useCallback((e: any) => {
-      setKeyword(e.target.value);
-    }, []);
-
     /**
      * メニューの選択.
      */
@@ -80,7 +72,28 @@ export const CloseableDrawer: FC<Props> = memo(
       [dispatch, onClose]
     );
 
-    //検索ワード
+    //検索キーワード
+    const [keyword, setKeyword] = useState("");
+
+    /**
+     * 検索キーワードを代入.
+     */
+    const imputKeyword = useCallback((e: any) => {
+      setKeyword(e.target.value);
+    }, []);
+
+    /**
+     * 検索.
+     */
+    const search = useCallback(
+      (e) => {
+        selectMenu(e, `/?search=${keyword.toUpperCase()}`);
+        setKeyword("");
+      },
+      [keyword, selectMenu]
+    );
+
+    //搾って表示ワード
     const [filters, setFilters] = useState([
       {
         func: selectMenu,
@@ -133,15 +146,12 @@ export const CloseableDrawer: FC<Props> = memo(
       });
     }, []);
 
+    //管理者か否か
+    const selector = useSelector((state: { users: userType }) => state);
+    const isAdministrator = getUserRole(selector);
+
     //メニューバーのメニュー
     const menus = [
-      {
-        func: selectMenu,
-        label: "商品登録",
-        icon: <AddCircleIcon />,
-        id: "register",
-        value: "/edit/",
-      },
       {
         func: selectMenu,
         label: "注文履歴",
@@ -184,12 +194,21 @@ export const CloseableDrawer: FC<Props> = memo(
                   type="text"
                   value={keyword}
                 />
-                <IconButton>
+                <IconButton onClick={(e) => search(e)}>
                   <SearchIcon />
                 </IconButton>
               </div>
               <Divider />
               <List onClick={(e) => onClose(e)}>
+                {isAdministrator === "administrator" && (
+                  <>
+                    <ListItem button onClick={(e) => selectMenu(e, "/edit/")}>
+                      <ListItemIcon>{<AddCircleIcon />}</ListItemIcon>
+                      <ListItemText primary="商品登録" />
+                    </ListItem>
+                  </>
+                )}
+
                 {menus.map((menu, i) => (
                   <ListItem
                     button
@@ -208,7 +227,7 @@ export const CloseableDrawer: FC<Props> = memo(
                   <ListItemIcon>
                     <ExitToAppIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Logout" />
+                  <ListItemText primary="サインアウト" />
                 </ListItem>
               </List>
               <Divider />

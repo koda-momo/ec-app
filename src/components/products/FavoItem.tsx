@@ -33,7 +33,7 @@ const useStyles = makeStyles({
 
 type Props = {
   favoItem: favoType;
-  deleteFavoItem: (id: string) => void;
+  deleteFavoItem?: (id: string) => void;
 };
 
 /**
@@ -74,9 +74,11 @@ export const FavoItem: FC<Props> = memo(({ favoItem, deleteFavoItem }) => {
             />
             <ListItemText primary={`\xA5${product.price}`} />
           </div>
-          <IconButton onClick={() => deleteFavoItem(favoItem.id)}>
-            <DeleteIcon />
-          </IconButton>
+          {deleteFavoItem && (
+            <IconButton onClick={() => deleteFavoItem(favoItem.id)}>
+              <DeleteIcon />
+            </IconButton>
+          )}
         </ListItem>
         <Divider />
       </List>

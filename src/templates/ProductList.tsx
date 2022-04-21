@@ -39,6 +39,8 @@ export const ProductList = () => {
   const category = /^\?category=/.test(query)
     ? query.split("?category=")[1]
     : "";
+  //URLの後ろから検索ワードを取得
+  const search = /^\?search=/.test(query) ? query.split("?search=")[1] : "";
 
   //商品一覧
   const products = getProducts(productSelector).products.list;
@@ -48,20 +50,14 @@ export const ProductList = () => {
    */
   useEffect(() => {
     //Firebaseの情報を取得
-    dispatch(fetchProducts(field, category));
+    dispatch(fetchProducts(field, category, search));
   }, [query]);
 
   return (
     <>
       <section className="c-section-wrapin">
         <h2 className="u-text__headline u-text-center">商品一覧</h2>
-        <div>
-          このサイトは練習のために作成したものとなります。並べている本は
-          <a href="https://github.com/koda-momo" className={classes.link}>
-            私
-          </a>
-          が読んだことのある本です。
-        </div>
+
         <div className="p-grid__row">
           {products.length > 0 ? (
             products.map((item, i) => (
