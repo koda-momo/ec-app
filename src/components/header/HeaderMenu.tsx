@@ -84,7 +84,7 @@ export const HeaderMenu: FC<Props> = memo(({ handleDrawerToggle }) => {
           <ShoppingCartIcon />
         </Badge>
       </IconButton>
-      <IconButton>
+      <IconButton onClick={() => dispatch(push("/favo"))}>
         <FavoriteBorderIcon />
       </IconButton>
       <IconButton onClick={(e) => handleDrawerToggle(e)}>

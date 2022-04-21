@@ -9,6 +9,7 @@ import ProductDetail from "./templates/ProductDetail";
 import CartList from "./templates/CartList";
 import OrderConfirm from "./templates/OrderConfirm";
 import OrderHistory from "./templates/OrderHistory";
+import FavoList from "./templates/FavoList";
 
 //Switch+exactで「100%そのURLだった場合、遷移」という設定になる
 //(/)?で囲んだ文字列はあっても無くてもマッチ(ダイナミックルートと同じ感じ)
@@ -28,6 +29,7 @@ const Router = () => {
         <Route path={"/cart"} component={CartList} />
         <Route exact path={"/order/confirm"} component={OrderConfirm} />
         <Route exact path={"/order/history"} component={OrderHistory} />
+        <Route exact path={"/favo"} component={FavoList} />
         {/* <Route exact path={"/order/complete"} component={} /> */}
         {/* <Route exact path={"/order/complete"} component={} /> */}
       </Auth>

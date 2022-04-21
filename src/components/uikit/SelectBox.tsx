@@ -37,8 +37,8 @@ export const SelectBox: FC<Props> = memo((props) => {
           value={value}
           onChange={(e: ChangeEvent<any>) => select(e.target.value)}
         >
-          {options.map((option) => (
-            <MenuItem key={option.id} value={option.id}>
+          {options.map((option, i) => (
+            <MenuItem key={i} value={option.id}>
               {option.name}
             </MenuItem>
           ))}

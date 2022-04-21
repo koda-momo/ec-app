@@ -10,7 +10,6 @@ import IconButton from "@material-ui/core/IconButton";
 
 //icon
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 
 //css
 import { makeStyles } from "@material-ui/styles";
@@ -65,11 +64,7 @@ export const PublicationTable: FC<Props> = memo(
                         <div> 売切</div>
                       )}
                     </TableCell>
-                    <TableCell>
-                      <IconButton>
-                        <FavoriteIcon />
-                      </IconButton>
-                    </TableCell>
+                    <TableCell></TableCell>
                     <TableCell></TableCell>
                   </TableRow>
                 ))}

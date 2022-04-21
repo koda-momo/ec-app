@@ -39,3 +39,11 @@ export const getOrdersHistory = createSelector(
   [userSelector],
   (state) => state.orders
 );
+
+/**
+ * お気に入り情報取得.
+ */
+export const getFavoList = createSelector(
+  [userSelector],
+  (state) => state.favoList
+);

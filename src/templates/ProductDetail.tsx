@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 //CSS
 import { createStyles, makeStyles } from "@material-ui/core/styles";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 //Firebase
 import { doc, getDoc } from "firebase/firestore";
@@ -13,7 +14,8 @@ import { productsType } from "../reducks/products/types";
 import HTMLReactParser from "html-react-parser";
 import { ImageSwiper } from "../components/products/ImageSwiper";
 import { PublicationTable } from "../components/products/PublicationTable";
-import { addProductToCart } from "../reducks/users/operations";
+import { addFavoList, addProductToCart } from "../reducks/users/operations";
+import { IconButton } from "@material-ui/core";
 
 //CSS
 const useStyles = makeStyles((theme) =>
@@ -50,6 +52,16 @@ const useStyles = makeStyles((theme) =>
     },
     noItem: {
       color: "red",
+    },
+    priceAndFavo: {
+      display: "flex",
+      gap: 5,
+      alignItems: "center",
+    },
+    iconCell: {
+      padding: 0,
+      height: 20,
+      width: 20,
     },
   })
 );
@@ -137,7 +149,15 @@ export const ProductDetail = () => {
             </div>
             <div className={classes.detail}>
               <h2 className="u-text__headline">{product.name}</h2>
-              <p className={classes.price}> &yen;{formatPrice}</p>
+              <div className={classes.priceAndFavo}>
+                <p className={classes.price}> &yen;{formatPrice}</p>
+                <IconButton
+                  onClick={() => dispatch(addFavoList(product))}
+                  className={classes.iconCell}
+                >
+                  <FavoriteIcon />
+                </IconButton>
+              </div>
               <div className="module-spacer--small" />
               <p>{returnCodeToBr(product.description)}</p>
               <div className="module-spacer--small" />

@@ -1,5 +1,5 @@
 import { Timestamp } from "firebase/firestore";
-import { orderProductsType } from "../products/types";
+import { orderProductsType, productsType } from "../products/types";
 
 //カートタイプ
 export type cartType = {
@@ -15,19 +15,6 @@ export type cartType = {
   publication: string;
 };
 
-//ユーザタイプ
-export type userType = {
-  isSignedIn: boolean;
-  uid: string;
-  userName: string;
-  cart: Array<cartType>;
-  orders: Array<any>;
-};
-
-//Actionsで使用する型
-export type userActionType = { payload: userType };
-export type userCartActionType = { payload: Array<cartType> };
-
 //注文履歴
 export type orderHisType = {
   amount: number;
@@ -37,3 +24,25 @@ export type orderHisType = {
   shipping_date: Timestamp;
   updated_at: Timestamp;
 };
+
+//お気に入り
+export type favoType = {
+  created_at: Timestamp;
+  id: string;
+  productItem: productsType;
+  updated_at: Timestamp;
+};
+
+//ユーザタイプ
+export type userType = {
+  isSignedIn: boolean;
+  uid: string;
+  userName: string;
+  cart: Array<cartType>;
+  orders: Array<orderHisType>;
+  favoList: Array<favoType>;
+};
+
+//Actionsで使用する型
+export type userActionType = { payload: userType };
+export type userCartActionType = { payload: Array<cartType> };

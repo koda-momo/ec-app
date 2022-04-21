@@ -12,7 +12,9 @@ import {
 import { auth, db, FirebaseTimestamp } from "../../firebase/index";
 import {
   collection,
+  deleteDoc,
   doc,
+  documentId,
   getDoc,
   getDocs,
   orderBy,
@@ -25,6 +27,9 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { cartType, orderHisType, userType } from "./types";
+import { productsType } from "../products/types";
+import { useSelector } from "react-redux";
+import { getFavoList } from "./selecoters";
 
 /**
  * signup.
@@ -319,5 +324,67 @@ export const fetchFavo = () => {
       //storeの注文履歴を書き換え
       dispatch(fetchFavoAction(favoList));
     });
+  };
+};
+
+/**
+ * お気に入りに追加.
+ */
+export const addFavoList = (productItem: productsType) => {
+  return async (
+    dispatch: Dispatch<unknown>,
+    getState: () => { users: userType }
+  ) => {
+    //ログインしているユーザのIDをReduxから取得
+    const uid = getState().users.uid;
+    //タイムスタンプの作成
+    const timestamp = FirebaseTimestamp.now();
+
+    //IDの作成
+    const favoRef = doc(collection(db, "users", uid, "favoList"));
+
+    //既に登録されている商品かをチェック
+    const querySnapshot = await getDocs(
+      collection(db, "users", uid, "favoList")
+    );
+    let alreadyFavo = false;
+    querySnapshot.forEach((snapshot) => {
+      if (snapshot.data().productItem.name === productItem.name) {
+        alreadyFavo = true;
+      }
+    });
+
+    //登録するデータ
+    const data = {
+      id: favoRef.id,
+      created_at: timestamp,
+      productItem: productItem,
+      updated_at: timestamp,
+    };
+
+    //Firebaseに追加
+    if (!alreadyFavo) {
+      await setDoc(favoRef, data);
+      alert("商品をお気に入りリストに登録しました。");
+    } else {
+      alert("既に登録済の商品です");
+    }
+  };
+};
+
+/**
+ * お気に入りから削除.
+ * @param id - 削除したいお気に入りリストのID
+ */
+export const deleteFavo = (id: string) => {
+  return async (
+    dispatch: Dispatch<unknown>,
+    getState: () => { users: userType }
+  ) => {
+    //ログインしているユーザのIDをReduxから取得
+    const uid = getState().users.uid;
+
+    deleteDoc(doc(db, "users", uid, "favoList", id));
+    alert("お気に入りから削除しました");
   };
 };

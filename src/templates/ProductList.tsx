@@ -64,9 +64,9 @@ export const ProductList = () => {
         </div>
         <div className="p-grid__row">
           {products.length > 0 ? (
-            products.map((item) => (
+            products.map((item, i) => (
               <ProductCard
-                key={item.id}
+                key={i}
                 id={item.id}
                 images={item.images}
                 name={item.name}

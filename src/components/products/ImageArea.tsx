@@ -33,9 +33,9 @@ export const ImageArea: FC<Props> = memo(({ images, setImages }) => {
       <div className="u-text-right">
         <div className="p-grid__list-images">
           {images.length > 0 &&
-            images.map((image) => (
+            images.map((image, i) => (
               <ImagePreview
-                key={image.id}
+                key={i}
                 id={image.id}
                 path={image.path}
                 deleteImage={deleteImage}
