@@ -16,3 +16,6 @@ Redux練習用に作成したECサイトです。<a href="https://www.youtube.co
   <li><a href="https://www.youtube.com/user/1492tiger">トラハックさんのYouTube</a></li>
   <li><a href="https://github.com/deatiger/ec-app-demo">トラハックさんのGitHub</a></li>
 </ul>
+
+## ■デプロイしました
+https://ec-ihnrdqnf1-koda-momo.vercel.app/
