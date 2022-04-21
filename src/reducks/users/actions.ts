@@ -1,5 +1,5 @@
 import { PayloadAction } from "@reduxjs/toolkit";
-import { cartType } from "./types";
+import { cartType, orderHisType } from "./types";
 
 //文字列を定数に入れてあげる(Reducerで使う際に依頼名を判断するため)
 export const SIGN_IN = "SIGN_IN";
@@ -58,5 +58,17 @@ export const fetchProductsInCartAction = (
     payload: {
       products,
     },
+  };
+};
+
+/**
+ * 注文履歴情報の書き換え.
+ */
+export const FETCH_ORDER_HISTORY_ACTION = "FETCH_ORDER_HISTORY_ACTION";
+
+export const fetchOrderHistoryAction = (history: Array<orderHisType>) => {
+  return {
+    type: "FETCH_ORDER_HISTORY_ACTION",
+    payload: history,
   };
 };

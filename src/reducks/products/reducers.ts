@@ -12,7 +12,7 @@ import { productActionType } from "./types";
  */
 export const ProductsReducer = (
   state = initialState.products,
-  action: PayloadAction<productActionType>
+  action: { type: string; payload: any }
 ) => {
   switch (action.type) {
     //Actionsで作成した指示のどれを使うか

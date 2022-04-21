@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import { useDispatch, useSelector } from "react-redux";
-import { getIsSignedIn } from "../../reducks/users/selecoters";
+import { getIsSignedIn, getUserName } from "../../reducks/users/selecoters";
 import { userType } from "../../reducks/users/types";
 import { push } from "connected-react-router";
 import { HeaderMenu } from "./HeaderMenu";
@@ -38,6 +38,8 @@ export const Header: FC = memo(() => {
   //サインインしているか否か
   const selector = useSelector((state: { users: userType }) => state);
   const isSignedIn = getIsSignedIn(selector);
+  //サインインユーザ
+  const userName = getUserName(selector);
 
   //メニューバーの開閉
   const [open, setOpen] = useState(false);
@@ -67,6 +69,7 @@ export const Header: FC = memo(() => {
           />
           {isSignedIn && (
             <div className={classes.iconButtons}>
+              {userName}さん、ようこそ
               <HeaderMenu handleDrawerToggle={handleDrawerToggle} />
             </div>
           )}

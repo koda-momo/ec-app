@@ -30,7 +30,7 @@ export const HeaderMenu: FC<Props> = memo(({ handleDrawerToggle }) => {
   const dispatch = useDispatch();
 
   const selector = useSelector((state: { users: userType }) => state);
-  //ログイン中のユーザID
+  //ログイン中のユーザ情報
   const uid = getUserId(selector);
 
   //カート情報
@@ -80,7 +80,7 @@ export const HeaderMenu: FC<Props> = memo(({ handleDrawerToggle }) => {
   return (
     <>
       <IconButton onClick={() => dispatch(push("/cart"))}>
-        <Badge badgeContent={productsInCart.length}>
+        <Badge badgeContent={productsInCart?.length}>
           <ShoppingCartIcon />
         </Badge>
       </IconButton>

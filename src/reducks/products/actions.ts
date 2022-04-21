@@ -1,3 +1,4 @@
+import { DocumentData } from "firebase/firestore";
 import { productsType } from "./types";
 
 //文字列を定数に入れてあげる(Reducerで使う際に依頼名を判断するため)

@@ -21,10 +21,10 @@ const useStyles = makeStyles((theme) =>
     detailBox: {
       margin: "0 auto",
       [theme.breakpoints.down("sm")]: {
-        eidth: 320,
+        width: 320,
       },
       [theme.breakpoints.up("md")]: {
-        eidth: 512,
+        width: 512,
       },
     },
     orderBox: {
@@ -86,8 +86,8 @@ const OrderConfirm = () => {
         <div className={classes.detailBox}>
           <List>
             {productInCart.length > 0 &&
-              productInCart.map((product) => (
-                <CartListItem product={product} />
+              productInCart.map((product, index) => (
+                <CartListItem product={product} key={index} />
               ))}
           </List>
         </div>

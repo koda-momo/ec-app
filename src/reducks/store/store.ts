@@ -12,6 +12,8 @@ import { History } from "history";
 //非同期処理の為にredux-thunk使用
 import thunk from "redux-thunk";
 
+import { composeWithDevTools } from "redux-devtools-extension";
+
 /**
  * state管理の倉庫.
  * @returns
@@ -24,6 +26,6 @@ export default function createStore(history: History) {
       users: UserReducer,
       products: ProductsReducer,
     }),
-    applyMiddleware(routerMiddleware(history), thunk)
+    composeWithDevTools(applyMiddleware(routerMiddleware(history), thunk))
   );
 }

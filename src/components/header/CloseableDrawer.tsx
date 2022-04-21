@@ -1,4 +1,4 @@
-import { FC, memo, useState, useCallback } from "react";
+import { FC, memo, useState, useCallback, useEffect } from "react";
 import { TextInput } from "../uikit/TextInput";
 import { signOut } from "../../reducks/users/operations";
 
@@ -22,6 +22,8 @@ import PersonIcon from "@material-ui/icons/Person";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { useDispatch } from "react-redux";
 import { push } from "connected-react-router";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { db } from "../../firebase";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -78,6 +80,59 @@ export const CloseableDrawer: FC<Props> = memo(
       [dispatch, onClose]
     );
 
+    //検索ワード
+    const [filters, setFilters] = useState([
+      {
+        func: selectMenu,
+        label: "すべて",
+        id: "all",
+        value: "/",
+      },
+      {
+        func: selectMenu,
+        label: "フロント",
+        id: "client",
+        value: "/?field=client",
+      },
+      {
+        func: selectMenu,
+        label: "サーバ",
+        id: "server",
+        value: "/?field=server",
+      },
+      {
+        func: selectMenu,
+        label: "その他",
+        id: "other",
+        value: "/?field=other",
+      },
+    ]);
+
+    /**
+     * カテゴリ一覧の取得.
+     */
+    useEffect(() => {
+      const q = query(collection(db, "categories"), orderBy("order", "asc"));
+      getDocs(q).then((snapshots) => {
+        const array = new Array<{
+          func: (e: any, path: any) => void;
+          id: string;
+          label: string;
+          value: string;
+        }>();
+        snapshots.forEach((snapshot) => {
+          const category = snapshot.data();
+          array.push({
+            func: selectMenu,
+            label: category.name,
+            id: category.id,
+            value: `/?category=${category.id}`,
+          });
+        });
+        setFilters((prevState) => [...prevState, ...array]);
+      });
+    }, []);
+
     //メニューバーのメニュー
     const menus = [
       {
@@ -92,7 +147,7 @@ export const CloseableDrawer: FC<Props> = memo(
         label: "注文履歴",
         icon: <HistoryIcon />,
         id: "history",
-        value: "/history",
+        value: "/order/history",
       },
       {
         func: selectMenu,
@@ -117,7 +172,7 @@ export const CloseableDrawer: FC<Props> = memo(
               keepMounted: true,
             }}
           >
-            <div onKeyDown={(e) => onClose(e)}>
+            <div onClick={(e) => onClose(e)}>
               <div className={classes.searchField}>
                 <TextInput
                   fullWidth={false}
@@ -155,6 +210,18 @@ export const CloseableDrawer: FC<Props> = memo(
                   </ListItemIcon>
                   <ListItemText primary="Logout" />
                 </ListItem>
+              </List>
+              <Divider />
+              <List>
+                {filters.map((filter) => (
+                  <ListItem
+                    button
+                    key={filter.id}
+                    onClick={(e) => filter.func(e, filter.value)}
+                  >
+                    <ListItemText primary={filter.label} />
+                  </ListItem>
+                ))}
               </List>
             </div>
           </Drawer>

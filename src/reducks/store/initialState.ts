@@ -11,6 +11,8 @@ const initialState = {
     userName: "",
     //カートリスト
     cart: [],
+    //注文履歴
+    orders: [],
   },
   products: {
     list: [],

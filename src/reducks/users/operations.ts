@@ -1,6 +1,7 @@
 import { push } from "connected-react-router";
 import { Dispatch } from "react";
 import {
+  fetchOrderHistoryAction,
   fetchProductsInCartAction,
   signInAction,
   signOutAction,
@@ -8,13 +9,21 @@ import {
 
 //firebase
 import { auth, db, FirebaseTimestamp } from "../../firebase/index";
-import { collection, doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  setDoc,
+} from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { cartType, userType } from "./types";
+import { cartType, orderHisType, userType } from "./types";
 
 /**
  * signup.
@@ -238,5 +247,32 @@ export const addProductToCart = (cartData: cartType) => {
 export const fetchProductsInCart = (products: Array<cartType>) => {
   return async (dispatch: Dispatch<unknown>) => {
     dispatch(fetchProductsInCartAction(products));
+  };
+};
+
+/**
+ * 注文履歴の取得.
+ */
+export const fetchOrderHistory = () => {
+  return async (
+    dispatch: Dispatch<unknown>,
+    getState: () => { users: userType }
+  ) => {
+    const uid = getState().users.uid;
+
+    //Firebaseから注文履歴の取得
+    const ordersRef = collection(db, "users", uid, "orders");
+    const q = query(ordersRef, orderBy("updated_at", "desc"));
+
+    getDocs(q).then((snapshots) => {
+      //仮の配列
+      const productList: any[] = [];
+
+      snapshots.forEach((snapshot) => {
+        productList.push(snapshot.data());
+      });
+      //storeの注文履歴を書き換え
+      dispatch(fetchOrderHistoryAction(productList));
+    });
   };
 };
