@@ -15,6 +15,8 @@ const initialState = {
     orders: [],
     //お気に入りリスト
     favoList: [],
+    //ユーザ画像
+    userImage: "",
   },
   products: {
     list: [],

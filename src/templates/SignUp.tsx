@@ -1,9 +1,11 @@
 import { push } from "connected-react-router";
 import { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
+import { ImageArea } from "../components/products/ImageArea";
 import { PrimaryButton } from "../components/uikit/PrimaryButton";
 import { TextInput } from "../components/uikit/TextInput";
 import { signUp } from "../reducks/users/operations";
+import NoImage from "../assets/images/no_image.png";
 
 /**
  * ユーザ情報新規登録.
@@ -52,11 +54,16 @@ export const SignUp = () => {
     setConfirmPassword(e.target.value);
   }, []);
 
+  const [images, setImages] = useState<Array<{ id: string; path: string }>>([]);
+
   return (
     <>
       <div className="c-section-container">
         <h2 className="u-text__headline u-text-center">アカウント登録</h2>
         <div className="module-spacer--medium" />
+
+        <ImageArea images={images} setImages={setImages} />
+
         <TextInput
           fullWidth={true}
           label="ユーザ名"
@@ -106,7 +113,15 @@ export const SignUp = () => {
           <PrimaryButton
             label="アカウントを登録する"
             onClick={() =>
-              dispatch(signUp(userName, email, password, confirmPassword))
+              dispatch(
+                signUp(
+                  userName,
+                  email,
+                  password,
+                  confirmPassword,
+                  images[0].path
+                )
+              )
             }
           />
           <div className="module-spacer--medium" />

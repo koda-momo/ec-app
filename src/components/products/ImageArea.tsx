@@ -42,7 +42,7 @@ export const ImageArea: FC<Props> = memo(({ images, setImages }) => {
               />
             ))}
         </div>
-        <span>商品情報を登録する</span>
+        <span>画像を登録する</span>
         <IconButton className={classes.icon}>
           <label>
             <AddPhotoAlternateIcon />

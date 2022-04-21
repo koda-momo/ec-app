@@ -2,12 +2,16 @@ import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FavoItem } from "../components/products/FavoItem";
 import { deleteFavo, fetchFavo } from "../reducks/users/operations";
-import { getUserName, getFavoList } from "../reducks/users/selecoters";
-import { userType } from "../reducks/users/types";
+import {
+  getUserName,
+  getFavoList,
+  getUserImage,
+} from "../reducks/users/selecoters";
 
 import { makeStyles } from "@material-ui/core/styles";
 import { PrimaryButton } from "../components/uikit/PrimaryButton";
 import { push } from "connected-react-router";
+import { userType } from "../reducks/users/types";
 
 const useStyles = makeStyles({
   flex: {
@@ -29,6 +33,11 @@ const useStyles = makeStyles({
     width: 500,
     "&::-webkit-scrollbar": { display: "none" },
   },
+  image: {
+    width: 150,
+    height: 150,
+    borderRadius: "100%",
+  },
 });
 
 /**
@@ -41,6 +50,7 @@ export const MyPage = () => {
   const selector = useSelector((state: { users: userType }) => state);
   const userName = getUserName(selector);
   const favoList = getFavoList(selector);
+  const userImage = getUserImage(selector);
 
   //dispatch
   const dispatch = useDispatch();
@@ -54,22 +64,28 @@ export const MyPage = () => {
     <>
       <section className="c-section-wrapin">
         <h2 className="u-text__headline">マイページ</h2>
+        <img src={userImage} alt="ユーザ画像" className={classes.image} />
         <div className={classes.title}>名前:{userName}</div>
         <div className="module-spacer--medium" />
         <PrimaryButton
           label="購入履歴はこちら"
           onClick={() => dispatch(push("/order/history"))}
         />
-        <div className="module-spacer--medium" />
-        <div className={classes.favo}>
-          <div className={classes.title}>お気に入りリスト</div>
-          <div className={classes.flex}>
-            <div className={classes.hiddenScrollBar}>
-              {favoList.length > 0 &&
-                favoList.map((favoItem) => <FavoItem favoItem={favoItem} />)}
+        {favoList.length > 0 && (
+          <>
+            <div className="module-spacer--medium" />
+            <div className={classes.favo}>
+              <div className={classes.title}>お気に入りリスト</div>
+              <div className={classes.flex}>
+                <div className={classes.hiddenScrollBar}>
+                  {favoList.map((favoItem) => (
+                    <FavoItem favoItem={favoItem} />
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
       </section>
     </>
   );

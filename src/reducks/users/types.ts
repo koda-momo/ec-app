@@ -38,6 +38,7 @@ export type userType = {
   isSignedIn: boolean;
   uid: string;
   userName: string;
+  userImage: string;
   cart: Array<cartType>;
   orders: Array<orderHisType>;
   favoList: Array<favoType>;
