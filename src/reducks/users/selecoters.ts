@@ -33,6 +33,14 @@ export const getIsSignedIn = createSelector(
 );
 
 /**
+ * 役割取得.
+ */
+export const getUserRole = createSelector(
+  [userSelector],
+  (state) => state.role
+);
+
+/**
  * カート情報取得.
  */
 export const getProductsInCart = createSelector(

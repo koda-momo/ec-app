@@ -57,6 +57,11 @@ export const signUp = (
       return false;
     }
 
+    if (password.length < 6) {
+      alert("パスワードは6文字以上で入力して下さい。");
+      return false;
+    }
+
     //ＦirebaseのAuthにユーザ情報登録
     return createUserWithEmailAndPassword(auth, email, password).then(
       (result: any) => {

@@ -1,5 +1,5 @@
-import { FC, memo, useState } from "react";
-import { useDispatch } from "react-redux";
+import { FC, memo, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { push } from "connected-react-router";
 import NoImage from "../../assets/images/no_image.png";
 
@@ -18,7 +18,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 //icon
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { deleteProduct } from "../../reducks/products/operations";
-import { useEditImage } from "../../hooks/useEditImage";
+import { userType } from "../../reducks/users/types";
+import { getUserRole } from "../../reducks/users/selecoters";
 
 type Props = {
   id: string; //商品ID
@@ -98,6 +99,10 @@ export const ProductCard: FC<Props> = memo(({ id, images, name, price }) => {
     Element | ((element: Element) => Element) | null | undefined
   >(null);
 
+  //管理者か否か
+  const selector = useSelector((state: { users: userType }) => state);
+  const [isAdministrator] = useState(getUserRole(selector));
+
   /**
    * メニューを開く.
    */
@@ -128,28 +133,31 @@ export const ProductCard: FC<Props> = memo(({ id, images, name, price }) => {
               &yen;{formatPrice}
             </Typography>
           </div>
-
-          <IconButton onClick={handleClick}>
-            <MoreVertIcon />
-          </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={() => dispatch(push(`/edit/${id}`))}>
-              編集する
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                dispatch(deleteProduct(id));
-                handleClose();
-              }}
-            >
-              削除する
-            </MenuItem>
-          </Menu>
+          {isAdministrator === "administrator" && (
+            <>
+              <IconButton onClick={handleClick}>
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={() => dispatch(push(`/edit/${id}`))}>
+                  編集する
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    dispatch(deleteProduct(id));
+                    handleClose();
+                  }}
+                >
+                  削除する
+                </MenuItem>
+              </Menu>
+            </>
+          )}
         </CardContent>
       </Card>
     </>
