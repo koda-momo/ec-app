@@ -27,6 +27,7 @@ import {
 } from "firebase/auth";
 import { cartType, userType } from "./types";
 import { productsType } from "../products/types";
+import toast from "react-hot-toast";
 
 /**
  * signup.
@@ -47,18 +48,18 @@ export const signUp = (
       confirmPassword === "" ||
       userImage === ""
     ) {
-      alert("必須項目が未入力です。");
+      toast.error("必須項目が未入力です。");
       //途中で離脱の場合は、falseを返す
       return false;
     }
 
     if (password !== confirmPassword) {
-      alert("パスワードが一致しません。もう一度入力して下さい。");
+      toast.error("パスワードが一致しません。もう一度入力して下さい。");
       return false;
     }
 
     if (password.length < 6) {
-      alert("パスワードは6文字以上で入力して下さい。");
+      toast.error("パスワードは6文字以上で入力して下さい。");
       return false;
     }
 
@@ -99,7 +100,7 @@ export const signUp = (
 export const signIn = (email: string, password: string) => {
   return async (dispatch: Dispatch<unknown>) => {
     if (email === "" || password === "") {
-      alert("必須項目が未入力です。");
+      toast.error("必須項目が未入力です。");
       return false;
     }
 
@@ -134,21 +135,20 @@ export const signIn = (email: string, password: string) => {
       //サインインエラー処理
       .catch((error) => {
         if (error.message === "Firebase: Error (auth/invalid-email).") {
-          alert("メールアドレスの登録がありません");
+          toast.error("メールアドレスの登録がありません");
           return false;
         }
         if (error.message === "Firebase: Error (auth/wrong-password).") {
-          alert("パスワードが間違えています");
+          toast.error("パスワードが間違えています");
           return false;
         }
         if (error.message === "Quota exceeded.") {
-          alert(
+          toast.error(
             "FireBaseのアクセス上限に達してしまいました。日を改めて下さい。"
           );
           return false;
         }
-
-        alert("サインインに失敗しました");
+        toast.error("サインインに失敗しました");
       });
   };
 };
@@ -207,16 +207,16 @@ export const signOut = () => {
 export const resetPassword = (email: string) => {
   return async (dispatch: Dispatch<unknown>) => {
     if (email === "") {
-      alert("必須項目が未入力です。");
+      toast.error("必須項目が未入力です。");
       return false;
     } else {
       sendPasswordResetEmail(auth, email)
         .then(() => {
-          alert("パスワードリセットのメールを送信しました。");
+          toast.error("パスワードリセットのメールを送信しました。");
           dispatch(push("/signin"));
         })
         .catch(() => {
-          alert("パスワードリセットに失敗しました。");
+          toast.error("パスワードリセットに失敗しました。");
         });
     }
 
@@ -249,7 +249,7 @@ export const addProductToCart = (cartData: cartType) => {
 
     //Firebaseにカート情報を追加
     await setDoc(cartRef, addedProduct);
-    alert("商品をカートに追加しました");
+    toast.success("商品をカートに追加しました");
   };
 };
 
@@ -347,7 +347,7 @@ export const deleteFavo = (id: string) => {
     const uid = getState().users.uid;
 
     deleteDoc(doc(db, "users", uid, "favoList", id));
-    alert("お気に入りから削除しました");
+    toast.success("お気に入りから削除しました");
   };
 };
 
@@ -389,7 +389,7 @@ export const addFavoList = (productItem: productsType) => {
     //Firebaseに追加
     if (alreadyFavo === "") {
       await setDoc(favoRef, data);
-      alert("商品をお気に入りリストに登録しました。");
+      toast.success("商品をお気に入りリストに登録しました。");
     } else {
       dispatch(deleteFavo(alreadyFavo));
     }

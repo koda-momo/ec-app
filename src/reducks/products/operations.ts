@@ -12,12 +12,12 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { Dispatch } from "react";
-import { useSelector } from "react-redux";
-import { db, FirebaseTimestamp, storage } from "../../firebase";
+import { db, FirebaseTimestamp } from "../../firebase";
 import { cartType, userType } from "../users/types";
 import { deleteProductAction, fetchProductsAction } from "./actions";
-import { getProducts } from "./selectors";
 import { productsType, orderProductsType } from "./types";
+
+import toast from "react-hot-toast";
 
 const productsRef = collection(db, "products");
 
@@ -126,15 +126,15 @@ export const fetchProducts = (
  * @param id - 削除したい商品ID
  */
 export const deleteProduct = (id: string) => {
-  return async (dispatch: Dispatch<unknown>) => {
+  return async (
+    dispatch: Dispatch<unknown>,
+    getState: () => { products: { list: [productsType] } }
+  ) => {
     //DBから削除
     await deleteDoc(doc(db, "products", id));
 
     //Reduxの方も書き換え
-    const selector = useSelector(
-      (state: { products: { list: [productsType] } }) => state
-    );
-    const prevProducts = getProducts(selector).products.list;
+    const prevProducts = getState().products.list;
     const newPrevProducts = prevProducts.filter((item) => item.id !== id);
     dispatch(deleteProductAction(newPrevProducts));
   };
@@ -159,14 +159,17 @@ export const orderProduct = (
 
     //商品リスト
     let products = new Array<orderProductsType>();
+
     //売り切れ商品リスト(商品名だけ入る)
     let soldOutProducts = new Array<string>();
 
     //batchの使用
     const batch = writeBatch(db);
 
-    //商品の品切れ状況確認
+    //商品の品切れ状況確認(Firebaseからその商品の情報を１つずつ取得→確認)
     for (const product of productInCart) {
+      //その商品が売り切れか否か
+      let isSoleOut = false;
       const productSnapShot = await getDoc(
         doc(db, "products", product.productId)
       );
@@ -176,87 +179,95 @@ export const orderProduct = (
       const updatePublications = publications.map(
         (publication: { publication: string; quantity: number }) => {
           if (publication.publication === product.publication) {
-            //売り切れ→品切れの配列に追加
+            //在庫切れの際
             if (publication.quantity === 0) {
               soldOutProducts.push(product.name);
+              isSoleOut = true;
               return publication;
+            } else {
+              return {
+                publication: publication.publication,
+                quantity: publication.quantity - 1, //在庫は-1する
+              };
             }
-            return {
-              publication: publication.publication,
-              quantity: publication.quantity - 1, //在庫は-1する
-            };
           } else {
             return publication;
           }
         }
       );
 
-      //注文商品配列の作成(注文履歴に使用)
-      products = [
-        ...products,
-        {
+      // Firebaseの在庫書き換え
+      setDoc(doc(db, "products", product.productId), {
+        ...productSnapShot.data(),
+        publications: updatePublications,
+      });
+      //その商品が在庫切れでなければ、カートから削除＆注文商品リストに追加
+      if (!isSoleOut) {
+        //注文商品配列の作成(注文履歴に使用)
+        products.push({
           id: product.productId,
           images: product.images,
           name: product.name,
           price: product.price,
           publications: product.publication,
-        },
-      ];
-
-      //Firebaseの在庫書き換え
-      batch.update(doc(db, "products", product.productId), {
-        publications: updatePublications,
-      });
-
-      //Firebaseのカート書き換え(注文完了→カートを削除)
-      batch.delete(doc(doc(db, "users", uid), "cart", product.cartId));
+        });
+        //Firebaseのカート書き換え(注文完了→カートを削除)
+        await deleteDoc(doc(doc(db, "users", uid), "cart", product.cartId));
+      }
     }
 
     //商品の在庫切れがあった場合発動(複数商品→配列の名前を「と」で繋ぐ)
-    if (soldOutProducts.length > 0) {
+    //全商品在庫切れ→return
+    if (
+      soldOutProducts.length > 0 &&
+      soldOutProducts.length === productInCart.length
+    ) {
       const errorMessage =
         soldOutProducts.length > 1
           ? soldOutProducts.join("と")
           : soldOutProducts[0];
 
-      alert(
-        `大変申し訳ありません。${errorMessage}が在庫切れとなったため、注文処理を中断しました。`
+      toast.error(
+        `大変申し訳ありません。${errorMessage}は在庫切れとなったため、注文処理を中断しました。`
       );
+
       return false;
-    } else {
+      //一部在庫切れ
+    } else if (soldOutProducts.length > 0) {
+      const errorMessage =
+        soldOutProducts.length > 1
+          ? soldOutProducts.join("と")
+          : soldOutProducts[0];
+
+      toast.error(
+        `大変申し訳ありません。一部商品(${errorMessage})は在庫切れとなったため、購入できませんでした。`
+      );
+    }
+    try {
       //特に問題ない場合は処理を実行
-      batch
-        .commit()
-        .then(() => {
-          const orderRef = doc(collection(db, "users", uid, "orders"));
-          //今日から3日後を発送日としてそれをFirebaseのTimeStamp型に
-          const date = timestamp.toDate();
-          const shippingDate = FirebaseTimestamp.fromDate(
-            new Date(date.setDate(date.getDate() + 3))
-          );
+      const orderRef = doc(collection(db, "users", uid, "orders"));
+      //今日から3日後を発送日としてそれをFirebaseのTimeStamp型に
+      const date = timestamp.toDate();
+      const shippingDate = FirebaseTimestamp.fromDate(
+        new Date(date.setDate(date.getDate() + 3))
+      );
 
-          //注文情報作成
-          const history = {
-            amount: amount,
-            created_at: timestamp,
-            id: orderRef.id,
-            products: products,
-            shipping_date: shippingDate,
-            updated_at: timestamp,
-          };
+      //注文情報作成
+      const history = {
+        amount: amount,
+        created_at: timestamp,
+        id: orderRef.id,
+        products: products,
+        shipping_date: shippingDate,
+        updated_at: timestamp,
+      };
 
-          //注文情報をFirebaseのordersコレクションに格納
-          setDoc(orderRef, history).then(() => {
-            dispatch(push("/order/complete"));
-          });
-        })
-        .catch(() => {
-          //処理の失敗
-          alert(
-            "注文処理に失敗しました。通信環境をご確認の上、もう一度お試しください。"
-          );
-          return false;
-        });
+      //注文情報をFirebaseのordersコレクションに格納
+      setDoc(orderRef, history).then(() => {
+        dispatch(push("/order/complete"));
+      });
+    } catch (e) {
+      toast.error("処理が失敗しました。通信環境などをご確認下さい。");
     }
   };
 };

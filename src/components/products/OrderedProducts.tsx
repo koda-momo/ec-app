@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 import { orderProductsType } from "../../reducks/products/types";
 import { push } from "connected-react-router";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   list: {
     backgroundColor: "#fff",
     height: "auto",
@@ -24,9 +24,24 @@ const useStyles = makeStyles({
     width: 96,
   },
   text: {
+    //普段
+    display: "block",
     width: "100%",
+    //スマホサイズの場合
+    [theme.breakpoints.down("sm")]: {
+      display: "none",
+    },
   },
-});
+  responsiveText: {
+    //普段
+    display: "none",
+    //スマホサイズの場合
+    [theme.breakpoints.down("sm")]: {
+      display: "block",
+      width: "100%",
+    },
+  },
+}));
 
 type Props = {
   products: orderProductsType[];
@@ -49,6 +64,17 @@ export const OrderedProducts: FC<Props> = memo(({ products }) => {
     [dispatch]
   );
 
+  /**
+   * 長い文字を入れると途中から…にしてくれるメソッド.
+   */
+  const responsiveProductName = useCallback((name: string) => {
+    let fixName = "";
+    if (name.length > 5) {
+      fixName = name.substring(0, 6) + "...";
+    }
+    return fixName;
+  }, []);
+
   return (
     <>
       <List>
@@ -69,8 +95,12 @@ export const OrderedProducts: FC<Props> = memo(({ products }) => {
                 />
                 <ListItemText primary={`\xA5${product.price}`} />
               </div>
+              <div className={classes.responsiveText}>
+                <ListItemText primary={responsiveProductName(product.name)} />
+                <ListItemText primary={`\xA5${product.price}`} />
+              </div>
               <PrimaryButton
-                label="商品詳細を見る"
+                label="商品詳細"
                 onClick={() => gotoProductDetail(product.id)}
               />
             </ListItem>

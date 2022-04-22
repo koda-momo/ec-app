@@ -1,5 +1,5 @@
 import { FC, memo, useState, useCallback } from "react";
-import { makeStyles } from "@material-ui/styles";
+import { createStyles, makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,23 +9,33 @@ import { push } from "connected-react-router";
 import { HeaderMenu } from "./HeaderMenu";
 import { CloseableDrawer } from "./CloseableDrawer";
 
-const useStyles = makeStyles({
-  root: {
-    flexGrow: 1,
-  },
-  menuBar: {
-    backgroundColor: "#fff",
-    color: "#444",
-  },
-  toolBar: {
-    margin: "0 auto",
-    maxWidth: 1024,
-    width: "100%",
-  },
-  iconButtons: {
-    margin: "0 0 0 auto",
-  },
-});
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    root: {
+      flexGrow: 1,
+    },
+    menuBar: {
+      backgroundColor: "#fff",
+      color: "#444",
+    },
+    toolBar: {
+      margin: "0 auto",
+      maxWidth: 1024,
+      width: "100%",
+    },
+    iconButtons: {
+      margin: "0 0 0 auto",
+      display: "flex",
+      alignItems: "center",
+    },
+    responsive: {
+      display: "block",
+      [theme.breakpoints.down("md")]: {
+        display: "none",
+      },
+    },
+  })
+);
 
 /**
  * ヘッダー.
@@ -69,7 +79,9 @@ export const Header: FC = memo(() => {
           />
           {isSignedIn && (
             <div className={classes.iconButtons}>
-              {userName}さん、ようこそ
+              <span className={classes.responsive}>
+                {userName}さん、ようこそ
+              </span>
               <HeaderMenu handleDrawerToggle={handleDrawerToggle} />
             </div>
           )}

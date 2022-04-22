@@ -12,6 +12,7 @@ import { History } from "history";
 //非同期処理の為にredux-thunk使用
 import thunk from "redux-thunk";
 
+//DevTools使用
 import { composeWithDevTools } from "redux-devtools-extension";
 
 /**

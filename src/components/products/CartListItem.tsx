@@ -18,7 +18,7 @@ import { push } from "connected-react-router";
 
 const useStyles = makeStyles({
   list: {
-    height: 128,
+    height: "auto",
   },
   image: {
     objectFit: "cover",

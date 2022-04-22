@@ -27,6 +27,7 @@ import { makeStyles } from "@material-ui/styles";
 
 //other
 import { TextInput } from "../uikit/TextInput";
+import toast from "react-hot-toast";
 
 type Props = {
   publications: Array<{ publication: string; quantity: number }>; //発行日と数量
@@ -93,7 +94,7 @@ export const SetPublicationArea: FC<Props> = memo(
     const addPublication = useCallback(
       (index: number, publication: string, quantity: number) => {
         if (publication === "" || quantity === 0) {
-          alert("タイプと数量を入力して下さい");
+          toast.error("タイプと数量を入力して下さい");
           return false;
         }
 

@@ -27,8 +27,6 @@ export const ProductList = () => {
   const productSelector = useSelector(
     (state: { products: { list: [productsType] } }) => state
   );
-  //CSS
-  const classes = useStyles();
 
   //URLの取得
   const query = selector.router.location.search;
