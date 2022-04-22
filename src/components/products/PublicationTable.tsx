@@ -12,7 +12,7 @@ import IconButton from "@material-ui/core/IconButton";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 //css
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles, createStyles } from "@material-ui/core/styles";
 
 type Props = {
   publications: Array<{ publication: string; quantity: number }>; //出版日
@@ -20,16 +20,28 @@ type Props = {
 };
 
 //CSS
-const useStyles = makeStyles({
-  iconCell: {
-    padding: 0,
-    height: 20,
-    width: 20,
-  },
-  publication: {
-    fontSize: 13,
-  },
-});
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    iconCell: {
+      padding: 0,
+      height: 20,
+      width: 20,
+    },
+    publication: {
+      fontSize: 13,
+      //スマホサイズの場合
+      [theme.breakpoints.down("sm")]: {
+        fontSize: 11,
+      },
+    },
+    soldOut: {
+      fontSize: 13,
+      width: 100,
+      textAlign: "center",
+      color: "red",
+    },
+  })
+);
 
 /**
  * 出版日を表示するテーブル.
@@ -47,9 +59,8 @@ export const PublicationTable: FC<Props> = memo(
                 publications.map((item, i) => (
                   <TableRow key={i}>
                     <TableCell component="th" scope="row">
-                      <div className={classes.publication}>出版日:</div>
                       <div className={classes.publication}>
-                        {item.publication}
+                        出版日:{item.publication}
                       </div>
                     </TableCell>
                     <TableCell>残り:{item.quantity}点</TableCell>
@@ -61,11 +72,9 @@ export const PublicationTable: FC<Props> = memo(
                           <ShoppingCartIcon />
                         </IconButton>
                       ) : (
-                        <div> 売切</div>
+                        <div className={classes.soldOut}>売切</div>
                       )}
                     </TableCell>
-                    <TableCell></TableCell>
-                    <TableCell></TableCell>
                   </TableRow>
                 ))}
             </TableBody>
