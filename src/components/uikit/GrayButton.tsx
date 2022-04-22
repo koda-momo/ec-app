@@ -15,6 +15,9 @@ const useStyles = makeStyles((theme) => ({
     height: 48,
     marginBottom: 16,
     width: 256,
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 11,
+    },
   },
 }));
 
