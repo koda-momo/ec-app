@@ -249,7 +249,6 @@ export const addProductToCart = (cartData: cartType) => {
 
     //Firebaseにカート情報を追加
     await setDoc(cartRef, addedProduct);
-    toast.success("Successfully toasted!");
     toast.success("商品をカートに追加しました");
   };
 };
