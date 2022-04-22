@@ -17,6 +17,8 @@ import { cartType, userType } from "../users/types";
 import { deleteProductAction, fetchProductsAction } from "./actions";
 import { productsType, orderProductsType } from "./types";
 
+import toast from "react-hot-toast";
+
 const productsRef = collection(db, "products");
 
 /**
@@ -225,9 +227,10 @@ export const orderProduct = (
           ? soldOutProducts.join("と")
           : soldOutProducts[0];
 
-      alert(
+      toast.error(
         `大変申し訳ありません。${errorMessage}は在庫切れとなったため、注文処理を中断しました。`
       );
+
       return false;
       //一部在庫切れ
     } else if (soldOutProducts.length > 0) {
@@ -236,7 +239,7 @@ export const orderProduct = (
           ? soldOutProducts.join("と")
           : soldOutProducts[0];
 
-      alert(
+      toast.error(
         `大変申し訳ありません。一部商品(${errorMessage})は在庫切れとなったため、購入できませんでした。`
       );
     }
@@ -264,7 +267,7 @@ export const orderProduct = (
         dispatch(push("/order/complete"));
       });
     } catch (e) {
-      alert("処理が失敗しました。通信環境などをご確認下さい。");
+      toast.error("処理が失敗しました。通信環境などをご確認下さい。");
     }
   };
 };
