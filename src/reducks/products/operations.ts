@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 import { Dispatch } from "react";
 import { useSelector } from "react-redux";
-import { db, FirebaseTimestamp, storage } from "../../firebase";
+import { db, FirebaseTimestamp } from "../../firebase";
 import { cartType, userType } from "../users/types";
 import { deleteProductAction, fetchProductsAction } from "./actions";
 import { getProducts } from "./selectors";
@@ -126,15 +126,15 @@ export const fetchProducts = (
  * @param id - 削除したい商品ID
  */
 export const deleteProduct = (id: string) => {
-  return async (dispatch: Dispatch<unknown>) => {
+  return async (
+    dispatch: Dispatch<unknown>,
+    getState: () => { products: { list: [productsType] } }
+  ) => {
     //DBから削除
     await deleteDoc(doc(db, "products", id));
 
     //Reduxの方も書き換え
-    const selector = useSelector(
-      (state: { products: { list: [productsType] } }) => state
-    );
-    const prevProducts = getProducts(selector).products.list;
+    const prevProducts = getState().products.list;
     const newPrevProducts = prevProducts.filter((item) => item.id !== id);
     dispatch(deleteProductAction(newPrevProducts));
   };
@@ -159,14 +159,17 @@ export const orderProduct = (
 
     //商品リスト
     let products = new Array<orderProductsType>();
+
     //売り切れ商品リスト(商品名だけ入る)
     let soldOutProducts = new Array<string>();
 
     //batchの使用
     const batch = writeBatch(db);
 
-    //商品の品切れ状況確認
+    //商品の品切れ状況確認(Firebaseからその商品の情報を１つずつ取得→確認)
     for (const product of productInCart) {
+      //その商品が売り切れか否か
+      let isSoleOut = false;
       const productSnapShot = await getDoc(
         doc(db, "products", product.productId)
       );
@@ -176,15 +179,17 @@ export const orderProduct = (
       const updatePublications = publications.map(
         (publication: { publication: string; quantity: number }) => {
           if (publication.publication === product.publication) {
-            //売り切れ→品切れの配列に追加
+            //在庫切れの際
             if (publication.quantity === 0) {
               soldOutProducts.push(product.name);
+              isSoleOut = true;
               return publication;
+            } else {
+              return {
+                publication: publication.publication,
+                quantity: publication.quantity - 1, //在庫は-1する
+              };
             }
-            return {
-              publication: publication.publication,
-              quantity: publication.quantity - 1, //在庫は-1する
-            };
           } else {
             return publication;
           }
@@ -203,13 +208,16 @@ export const orderProduct = (
         },
       ];
 
-      //Firebaseの在庫書き換え
-      batch.update(doc(db, "products", product.productId), {
+      // Firebaseの在庫書き換え
+      setDoc(doc(db, "products", product.productId), {
+        ...productSnapShot.data(),
         publications: updatePublications,
       });
-
-      //Firebaseのカート書き換え(注文完了→カートを削除)
-      batch.delete(doc(doc(db, "users", uid), "cart", product.cartId));
+      //その商品が在庫切れでなければ、カートから削除
+      if (!isSoleOut) {
+        //Firebaseのカート書き換え(注文完了→カートを削除)
+        await deleteDoc(doc(doc(db, "users", uid), "cart", product.cartId));
+      }
     }
 
     //商品の在庫切れがあった場合発動(複数商品→配列の名前を「と」で繋ぐ)

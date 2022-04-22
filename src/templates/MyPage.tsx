@@ -1,7 +1,7 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FavoItem } from "../components/products/FavoItem";
-import { deleteFavo, fetchFavo } from "../reducks/users/operations";
+import { fetchFavo } from "../reducks/users/operations";
 import {
   getUserName,
   getFavoList,
