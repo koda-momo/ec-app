@@ -18,4 +18,4 @@ Redux練習用に作成したECサイトです。<a href="https://www.youtube.co
 </ul>
 
 ## ■デプロイしました
-https://ec-ihnrdqnf1-koda-momo.vercel.app/
+https://ec-app-sigma.vercel.app/signin
