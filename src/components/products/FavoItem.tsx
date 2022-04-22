@@ -68,10 +68,7 @@ export const FavoItem: FC<Props> = memo(({ favoItem, deleteFavoItem }) => {
             />
           </ListItemAvatar>
           <div className={classes.text}>
-            <ListItemText
-              primary={product.name}
-              secondary={`出版日:${product.publications}`}
-            />
+            <ListItemText primary={product.name} />
             <ListItemText primary={`\xA5${product.price}`} />
           </div>
           {deleteFavoItem && (
