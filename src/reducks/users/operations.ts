@@ -37,9 +37,10 @@ export const signUp = (
   email: string,
   password: string,
   confirmPassword: string,
-  userImage: string
+  images: Array<{ id: string; path: string }>
 ) => {
   return async (dispatch: Dispatch<unknown>) => {
+    const userImage = images.length > 0 ? images[0].path : "";
     //validation
     if (
       userName === "" ||

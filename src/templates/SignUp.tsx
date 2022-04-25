@@ -114,13 +114,7 @@ export const SignUp = () => {
             label="アカウントを登録する"
             onClick={() =>
               dispatch(
-                signUp(
-                  userName,
-                  email,
-                  password,
-                  confirmPassword,
-                  images[0].path
-                )
+                signUp(userName, email, password, confirmPassword, images)
               )
             }
           />
