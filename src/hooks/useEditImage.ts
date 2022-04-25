@@ -7,6 +7,7 @@ import {
   deleteObject,
 } from "firebase/storage";
 import { storage } from "../firebase";
+import toast from "react-hot-toast";
 
 /**
  * Firebaseのstorageに画像を登録、削除出来るhook.
@@ -36,20 +37,21 @@ export const useEditImage = (
         .join("");
 
       //imagesディレクトリの中に「fileName.jpg」という名前でblobをアップロードするよ
-      const storage = getStorage();
-      const uploadRef = ref(storage, `images/${fileName}.jpg`);
-      const uploadTask = uploadBytes(uploadRef, blob);
-      const snapshot = await uploadTask;
-
-      //アップロードが完了するとその画像が取得できるURLが返ってくる
-      const downloadURL = await getDownloadURL(snapshot.ref);
-
-      //表示用画像配列の作成(この書き方をするとsetメソッド使用でも.pushしなくて良い)
-      const newImage = { id: fileName, path: downloadURL };
-      setImages((prevState: Array<{ id: string; path: string }>) => [
-        ...prevState,
-        newImage,
-      ]);
+      try {
+        const storage = getStorage();
+        const uploadRef = ref(storage, `images/${fileName}.jpg`);
+        const snapshot = await uploadBytes(uploadRef, blob);
+        //アップロードが完了するとその画像が取得できるURLが返ってくる
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        //表示用画像配列の作成(この書き方をするとsetメソッド使用でも.pushしなくて良い)
+        const newImage = { id: fileName, path: downloadURL };
+        setImages((prevState: Array<{ id: string; path: string }>) => [
+          ...prevState,
+          newImage,
+        ]);
+      } catch (e) {
+        toast.error("処理に失敗しました。再度お試し下さい。");
+      }
     },
     [setImages]
   );

@@ -37,9 +37,10 @@ export const signUp = (
   email: string,
   password: string,
   confirmPassword: string,
-  userImage: string
+  images: Array<{ id: string; path: string }>
 ) => {
   return async (dispatch: Dispatch<unknown>) => {
+    const userImage = images.length > 0 ? images[0].path : "";
     //validation
     if (
       userName === "" ||
@@ -64,8 +65,8 @@ export const signUp = (
     }
 
     //ＦirebaseのAuthにユーザ情報登録
-    return createUserWithEmailAndPassword(auth, email, password).then(
-      (result: any) => {
+    return createUserWithEmailAndPassword(auth, email, password)
+      .then(async (result: any) => {
         const user = result.user;
         //ユーザがキチンと登録されたかどうか
         if (user) {
@@ -83,14 +84,19 @@ export const signUp = (
           };
 
           //ユーザ情報をFirebaseのDBにも登録(該当のidに情報を入れる)
-          setDoc(doc(db, "users", uid), userInitialData)
-            //成功したら
-            .then(() => {
-              dispatch(push("/"));
-            });
+          await setDoc(doc(db, "users", uid), userInitialData);
+          dispatch(push("/"));
+        } else {
+          toast.error("処理に失敗しました。もう一度お試しください。");
         }
-      }
-    );
+      })
+      .catch((error) => {
+        if (error.message === "Firebase: Error (auth/email-already-in-use).") {
+          toast.error("既に使用されているメールアドレスです");
+          return false;
+        }
+        toast.error("処理に失敗しました。もう一度お試しください。");
+      });
   };
 };
 
